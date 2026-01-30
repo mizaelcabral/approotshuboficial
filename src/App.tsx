@@ -306,6 +306,16 @@ const DashboardPage = () => (
     </div>
 );
 
+// --- Mock Data ---
+const ORDERS_DATA = [
+    { id: '#RC-9842', date: '18 Set, 2023', time: '14:45', icon: 'opacity', product: 'Óleo CBD Full Spectrum 10%', desc: 'Frasco 30ml', price: 'R$ 245,00', status: 'Processando', statusColor: 'amber' },
+    { id: '#RC-9210', date: '05 Ago, 2023', time: '10:15', icon: 'medical_services', product: 'Cápsulas THC:CBD 1:1', desc: '60 cápsulas', price: 'R$ 189,90', status: 'Enviado', statusColor: 'blue' },
+    { id: '#RC-8850', date: '12 Jul, 2023', time: '09:30', icon: 'opacity', product: 'Óleo CBD Full Spectrum 10%', desc: 'Frasco 30ml', price: 'R$ 245,00', status: 'Entregue', statusColor: 'green' },
+    { id: '#RC-8520', date: '22 Jun, 2023', time: '15:20', icon: 'medical_services', product: 'Gel CBD Tópico Sport', desc: 'Frasco 100ml', price: 'R$ 156,00', status: 'Entregue', statusColor: 'green' },
+    { id: '#RC-7912', date: '15 Mai, 2023', time: '11:10', icon: 'opacity', product: 'Óleo CBD Isolado 5%', desc: 'Frasco 30ml', price: 'R$ 120,00', status: 'Entregue', statusColor: 'green' },
+    { id: '#RC-7450', date: '02 Abr, 2023', time: '08:45', icon: 'medical_services', product: 'Gummies CBD Relax', desc: '30 unidades', price: 'R$ 98,00', status: 'Entregue', statusColor: 'green' },
+];
+
 // --- Page: Orders ---
 const OrdersPage = () => (
     <div className="space-y-6">
@@ -349,11 +359,7 @@ const OrdersPage = () => (
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-                            {[
-                                { id: '#RC-9842', date: '18 Set, 2023', time: '14:45', icon: 'opacity', product: 'Óleo CBD Full Spectrum 10%', desc: 'Frasco 30ml', price: 'R$ 245,00', status: 'Processando', statusColor: 'amber' },
-                                { id: '#RC-9210', date: '05 Ago, 2023', time: '10:15', icon: 'medical_services', product: 'Cápsulas THC:CBD 1:1', desc: '60 cápsulas', price: 'R$ 189,90', status: 'Enviado', statusColor: 'blue' },
-                                { id: '#RC-8850', date: '12 Jul, 2023', time: '09:30', icon: 'opacity', product: 'Óleo CBD Full Spectrum 10%', desc: 'Frasco 30ml', price: 'R$ 245,00', status: 'Entregue', statusColor: 'green' },
-                            ].map((order, idx) => (
+                            {ORDERS_DATA.map((order, idx) => (
                                 <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                                     <td className="px-6 py-5">
                                         <span className="font-bold text-sm text-gray-900 dark:text-white">{order.id}</span>
@@ -407,11 +413,7 @@ const OrdersPage = () => (
 
             {/* Mobile Card List - Visible Only on Mobile */}
             <div className="md:hidden space-y-4">
-                {[
-                    { id: '#RC-9842', date: '18 Set, 2023', time: '14:45', icon: 'opacity', product: 'Óleo CBD 10%', desc: '30ml', price: 'R$ 245,00', status: 'Processando', statusColor: 'amber' },
-                    { id: '#RC-9210', date: '05 Ago, 2023', time: '10:15', icon: 'medical_services', product: 'Cápsulas THC:CBD', desc: '60 un', price: 'R$ 189,90', status: 'Enviado', statusColor: 'blue' },
-                    { id: '#RC-8850', date: '12 Jul, 2023', time: '09:30', icon: 'opacity', product: 'Óleo CBD 10%', desc: '30ml', price: 'R$ 245,00', status: 'Entregue', statusColor: 'green' },
-                ].map((order, idx) => (
+                {ORDERS_DATA.map((order, idx) => (
                     <div key={idx} className="bg-white dark:bg-dark-surface p-4 rounded-xl border border-gray-100 dark:border-white/10 shadow-sm space-y-3">
                         <div className="flex justify-between items-start">
                             <div>
