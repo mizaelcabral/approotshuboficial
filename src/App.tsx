@@ -957,13 +957,13 @@ const LoginPage = ({ onLogin, onSwitchToRegister }: { onLogin: () => void, onSwi
 const RegisterPage = ({ onBackToLogin }: { onBackToLogin: () => void }) => {
     return (
         <div className="flex min-h-screen w-full bg-white dark:bg-background-dark font-display">
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gray-100">
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#144443]">
                 <img
                     alt="Smiling doctor in a modern clinical setting holding a medicinal cannabis dropper bottle"
                     className="absolute inset-0 w-full h-full object-cover"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuAii9FSfW08r8Zs0Jhm_7e24VC2KSeYU3knCsknNrgO4YthJBocBIbFpcRWQDpSpoECJ9P6ST4HIaibUR--s_0lFu_XmWXiuP7GoJ7I6cl1ere25wfpjbJdaC4Ir1Ttxm5i0Uf1FDHXESk7D7jgOCmo5XF0N83UmQC84ZKbfihAQ3GaKk2t-5PQkjO9JpCtrKO5aGY1LgT7AfQoKRTvqKH29MSlkvz_ZdPZo9F65vf0pi8PqEsnoOdC9KLAhwWNbSBJE1HuzvO08-g"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-brand-dark/30 to-brand-dark/10"></div>
+                <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#144443] via-[#144443]/40 to-transparent"></div>
                 <div className="relative z-10 flex flex-col justify-between p-12 w-full">
                     <div className="flex items-center gap-3 text-white">
                         <div className="size-10">
@@ -975,8 +975,8 @@ const RegisterPage = ({ onBackToLogin }: { onBackToLogin: () => void }) => {
                         <span className="text-2xl font-bold tracking-tight">Rootcare</span>
                     </div>
                     <div className="max-w-lg">
-                        <h2 className="text-4xl font-bold text-white mb-6 leading-tight">Cuidado humano e tecnologia para o seu bem-estar.</h2>
-                        <p className="text-lg text-gray-100 leading-relaxed font-medium">Conectamos pacientes a especialistas para um tratamento de cannabis medicinal integrado, seguro e personalizado.</p>
+                        <h2 className="text-4xl font-bold text-white mb-6 leading-tight drop-shadow-lg">Cuidado humano e tecnologia para o seu bem-estar.</h2>
+                        <p className="text-lg text-gray-100 leading-relaxed font-medium drop-shadow-md">Conectamos pacientes a especialistas para um tratamento de cannabis medicinal integrado, seguro e personalizado.</p>
                     </div>
                     <div className="text-sm text-gray-300">
                         © 2024 Rootcare. Todos os direitos reservados.
