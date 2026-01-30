@@ -825,7 +825,7 @@ const AppointmentsPage = () => (
 );
 
 // --- Page: Login ---
-const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
+const LoginPage = ({ onLogin, onSwitchToRegister }: { onLogin: () => void, onSwitchToRegister: () => void }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -940,7 +940,131 @@ const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
                     </form>
                     <div className="mt-8 flex items-center justify-center gap-2">
                         <span className="text-gray-500 dark:text-gray-400 text-sm">Não tem uma conta?</span>
-                        <a className="text-[#0e1b12] dark:text-white font-bold text-sm hover:text-primary transition-colors" href="#">Cadastre-se agora</a>
+                        <button
+                            onClick={onSwitchToRegister}
+                            className="text-[#0e1b12] dark:text-white font-bold text-sm hover:text-primary transition-colors"
+                        >
+                            Cadastre-se agora
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// --- Page: Register ---
+const RegisterPage = ({ onBackToLogin }: { onBackToLogin: () => void }) => {
+    return (
+        <div className="flex min-h-screen w-full bg-white dark:bg-background-dark font-display">
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gray-100">
+                <img
+                    alt="Smiling doctor in a modern clinical setting holding a medicinal cannabis dropper bottle"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAii9FSfW08r8Zs0Jhm_7e24VC2KSeYU3knCsknNrgO4YthJBocBIbFpcRWQDpSpoECJ9P6ST4HIaibUR--s_0lFu_XmWXiuP7GoJ7I6cl1ere25wfpjbJdaC4Ir1Ttxm5i0Uf1FDHXESk7D7jgOCmo5XF0N83UmQC84ZKbfihAQ3GaKk2t-5PQkjO9JpCtrKO5aGY1LgT7AfQoKRTvqKH29MSlkvz_ZdPZo9F65vf0pi8PqEsnoOdC9KLAhwWNbSBJE1HuzvO08-g"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-brand-dark/30 to-brand-dark/10"></div>
+                <div className="relative z-10 flex flex-col justify-between p-12 w-full">
+                    <div className="flex items-center gap-3 text-white">
+                        <div className="size-10">
+                            <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <path clipRule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="#30e86e" fillRule="evenodd"></path>
+                                <path clipRule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="#30e86e" fillRule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <span className="text-2xl font-bold tracking-tight">Rootcare</span>
+                    </div>
+                    <div className="max-w-lg">
+                        <h2 className="text-4xl font-bold text-white mb-6 leading-tight">Cuidado humano e tecnologia para o seu bem-estar.</h2>
+                        <p className="text-lg text-gray-100 leading-relaxed font-medium">Conectamos pacientes a especialistas para um tratamento de cannabis medicinal integrado, seguro e personalizado.</p>
+                    </div>
+                    <div className="text-sm text-gray-300">
+                        © 2024 Rootcare. Todos os direitos reservados.
+                    </div>
+                </div>
+            </div>
+            <div className="w-full lg:w-1/2 flex flex-col bg-white dark:bg-background-dark overflow-y-auto scrollbar-hide">
+                <div className="max-w-[540px] w-full mx-auto px-6 py-12 lg:py-16 flex flex-col h-full">
+                    <div className="flex lg:hidden items-center gap-3 mb-10">
+                        <div className="size-8">
+                            <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <path clipRule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="#30e86e" fillRule="evenodd"></path>
+                                <path clipRule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="#30e86e" fillRule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <span className="text-xl font-bold">Rootcare</span>
+                    </div>
+                    <div className="mb-8">
+                        <h1 className="text-3xl font-extrabold text-[#0e1b12] dark:text-white mb-2 font-display">Criar sua conta</h1>
+                        <p className="text-gray-500 dark:text-gray-400">Junte-se à nossa plataforma de saúde integrada.</p>
+                    </div>
+                    <div className="mb-10">
+                        <div className="flex justify-between items-end mb-2">
+                            <span className="text-xs font-bold text-primary tracking-wider uppercase">Passo 1 de 3: Perfil</span>
+                            <span className="text-xs font-medium text-gray-500">33% concluído</span>
+                        </div>
+                        <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                            <div className="h-full bg-primary w-1/3 rounded-full transition-all duration-500"></div>
+                        </div>
+                    </div>
+                    <div className="mb-10">
+                        <h3 className="text-sm font-bold text-[#0e1b12] dark:text-gray-200 mb-4">Como você deseja usar o Rootcare?</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <button className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-primary bg-primary/5 text-[#0e1b12] dark:text-white transition-all">
+                                <span className="material-symbols-outlined text-primary mb-2 text-3xl">person</span>
+                                <span className="text-sm font-bold">Paciente</span>
+                            </button>
+                            <button className="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 hover:border-primary/50 transition-all">
+                                <span className="material-symbols-outlined mb-2 text-3xl">medical_services</span>
+                                <span className="text-sm font-bold">Médico</span>
+                            </button>
+                            <button className="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 hover:border-primary/50 transition-all">
+                                <span className="material-symbols-outlined mb-2 text-3xl">clinical_notes</span>
+                                <span className="text-sm font-bold">Profissional</span>
+                            </button>
+                        </div>
+                    </div>
+                    <form className="space-y-5">
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="fullname">Nome Completo</label>
+                            <input className="block w-full px-4 py-3.5 rounded-xl border-gray-200 dark:border-gray-800 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-gray-400" id="fullname" placeholder="Seu nome completo" type="text" />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="email">E-mail</label>
+                            <input className="block w-full px-4 py-3.5 rounded-xl border-gray-200 dark:border-gray-800 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-gray-400" id="email" placeholder="seu@email.com" type="email" />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="cpf">CPF / Documento</label>
+                                <input className="block w-full px-4 py-3.5 rounded-xl border-gray-200 dark:border-gray-800 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-gray-400" id="cpf" placeholder="000.000.000-00" type="text" />
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="association">Associação</label>
+                                <select className="block w-full px-4 py-3.5 rounded-xl border-gray-200 dark:border-gray-800 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" id="association">
+                                    <option disabled="" defaultValue="" value="">Vínculo opcional</option>
+                                    <option value="1">Associação Abrace Esperança</option>
+                                    <option value="2">Apepi</option>
+                                    <option value="3">Cultive</option>
+                                    <option value="4">Não possuo vínculo</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="pt-6">
+                            <button className="w-full bg-primary hover:bg-primary-dark text-[#0e1b12] font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2 group" type="button">
+                                <span>Próximo Passo</span>
+                                <span className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">arrow_forward</span>
+                            </button>
+                        </div>
+                    </form>
+                    <div className="mt-10 flex flex-col items-center gap-4">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Já possui uma conta? <button onClick={onBackToLogin} className="text-primary font-bold hover:underline">Fazer Login</button>
+                        </p>
+                        <div className="flex items-center gap-6 mt-4">
+                            <a className="text-xs text-gray-400 hover:text-primary transition-colors" href="#">Termos de Uso</a>
+                            <a className="text-xs text-gray-400 hover:text-primary transition-colors" href="#">Privacidade</a>
+                            <a className="text-xs text-gray-400 hover:text-primary transition-colors" href="#">Suporte</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -951,6 +1075,7 @@ const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
 // --- Main App ---
 export default function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [authView, setAuthView] = useState<'login' | 'register'>('login');
     const [activePage, setActivePage] = useState<Page>('dashboard');
     const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -965,10 +1090,13 @@ export default function App() {
 
     const handleLogout = () => {
         setIsAuthenticated(false);
+        setAuthView('login');
     };
 
     if (!isAuthenticated) {
-        return <LoginPage onLogin={handleLogin} />;
+        return authView === 'login'
+            ? <LoginPage onLogin={handleLogin} onSwitchToRegister={() => setAuthView('register')} />
+            : <RegisterPage onBackToLogin={() => setAuthView('login')} />;
     }
 
     return (
