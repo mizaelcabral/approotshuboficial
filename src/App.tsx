@@ -1027,21 +1027,43 @@ const RegisterPage = ({ onBackToLogin }: { onBackToLogin: () => void }) => {
                     <form className="space-y-5">
                         <div className="space-y-1.5">
                             <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="fullname">Nome Completo</label>
-                            <input className="block w-full px-4 py-3.5 rounded-xl border-gray-200 dark:border-gray-800 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-gray-400" id="fullname" placeholder="Seu nome completo" type="text" />
+                            <input
+                                className="block w-full px-4 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white placeholder:text-gray-400"
+                                id="fullname"
+                                placeholder="Seu nome completo"
+                                type="text"
+                                style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                            />
                         </div>
                         <div className="space-y-1.5">
                             <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="email">E-mail</label>
-                            <input className="block w-full px-4 py-3.5 rounded-xl border-gray-200 dark:border-gray-800 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-gray-400" id="email" placeholder="seu@email.com" type="email" />
+                            <input
+                                className="block w-full px-4 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white placeholder:text-gray-400"
+                                id="email"
+                                placeholder="seu@email.com"
+                                type="email"
+                                style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                            />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div className="space-y-1.5">
                                 <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="cpf">CPF / Documento</label>
-                                <input className="block w-full px-4 py-3.5 rounded-xl border-gray-200 dark:border-gray-800 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-gray-400" id="cpf" placeholder="000.000.000-00" type="text" />
+                                <input
+                                    className="block w-full px-4 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white placeholder:text-gray-400"
+                                    id="cpf"
+                                    placeholder="000.000.000-00"
+                                    type="text"
+                                    style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                />
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="association">Associação</label>
-                                <select className="block w-full px-4 py-3.5 rounded-xl border-gray-200 dark:border-gray-800 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" id="association">
-                                    <option disabled="" defaultValue="" value="">Vínculo opcional</option>
+                                <select
+                                    className="block w-full px-4 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white"
+                                    id="association"
+                                    style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                >
+                                    <option disabled value="">Vínculo opcional</option>
                                     <option value="1">Associação Abrace Esperança</option>
                                     <option value="2">Apepi</option>
                                     <option value="3">Cultive</option>
