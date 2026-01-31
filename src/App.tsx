@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Types ---
-type Page = 'dashboard' | 'orders' | 'appointments' | 'professionals' | 'pharmacy' | 'product_details' | 'cart' | 'checkout' | 'payment_success';
+type Page = 'dashboard' | 'orders' | 'appointments' | 'professionals' | 'pharmacy' | 'product_details' | 'cart' | 'checkout' | 'payment_success' | 'addresses' | 'reports';
 
 interface CartItem {
     name: string;
@@ -14,10 +14,10 @@ interface CartItem {
 }
 
 // --- Sidebar Item ---
-const SidebarItem = ({ icon, label, active = false, onClick }: { icon: string, label: string, active?: boolean, onClick: () => void }) => (
+const SidebarItem = ({ icon, label, active = false, onClick, hasSubmenu = false, isExpanded = false }: { icon: string, label: string, active?: boolean, onClick: () => void, hasSubmenu?: boolean, isExpanded?: boolean }) => (
     <button
         onClick={onClick}
-        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${active
+        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${active && !hasSubmenu
             ? 'bg-primary/10 text-primary font-bold'
             : 'hover:bg-gray-100 dark:hover:bg-white/5 text-gray-500 hover:text-text-main dark:hover:text-white'
             }`}
@@ -25,7 +25,26 @@ const SidebarItem = ({ icon, label, active = false, onClick }: { icon: string, l
         <span className={`material-symbols-outlined ${active ? 'text-primary' : 'text-gray-500 group-hover:text-primary'}`}>
             {icon}
         </span>
-        <span className="text-sm">{label}</span>
+        <span className="text-sm flex-1 text-left">{label}</span>
+        {hasSubmenu && (
+            <span className={`material-symbols-outlined text-sm transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
+                expand_more
+            </span>
+        )}
+    </button>
+);
+
+// --- Sidebar SubItem ---
+const SidebarSubItem = ({ label, active = false, onClick }: { label: string, active?: boolean, onClick: () => void }) => (
+    <button
+        onClick={onClick}
+        className={`w-full flex items-center gap-3 pl-12 pr-3 py-2 rounded-lg transition-all duration-200 group ${active
+            ? 'text-primary font-bold'
+            : 'text-gray-400 hover:text-text-main dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5'
+            }`}
+    >
+        <div className={`w-1.5 h-1.5 rounded-full transition-colors ${active ? 'bg-primary' : 'bg-gray-300 dark:bg-white/20 group-hover:bg-primary/50'}`} />
+        <span className="text-xs uppercase tracking-wider font-bold">{label}</span>
     </button>
 );
 
@@ -479,6 +498,247 @@ const OrdersPage = () => (
         </div>
     </div>
 );
+
+// --- Page: Addresses (Placeholder) ---
+const AddressesPage = () => (
+    <div className="space-y-6">
+        <div className="flex justify-between items-center">
+            <div>
+                <h2 className="text-2xl font-black">Meus Endereços</h2>
+                <p className="text-gray-500 text-sm">Gerencie seus endereços de entrega e faturamento.</p>
+            </div>
+            <button className="bg-primary text-[#0e1b12] font-bold px-6 py-3 rounded-xl flex items-center gap-2 hover:scale-[1.02] transition-all">
+                <span className="material-symbols-outlined">add</span>
+                Novo Endereço
+            </button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border-2 border-primary shadow-sm space-y-3 relative overflow-hidden">
+                <div className="absolute top-0 right-0 bg-primary text-[#0e1b12] text-[10px] font-black px-3 py-1 rounded-bl-lg">PADRÃO</div>
+                <div className="flex items-center gap-3 text-primary">
+                    <span className="material-symbols-outlined">home</span>
+                    <span className="font-bold">Casa</span>
+                </div>
+                <p className="text-sm font-bold">Rua das Flores, 123 - Apto 42</p>
+                <p className="text-xs text-gray-500">Jardim Botânico, Curitiba - PR</p>
+                <p className="text-xs text-gray-500">CEP: 80210-000</p>
+                <div className="flex gap-4 pt-2">
+                    <button className="text-xs font-bold text-primary hover:underline">Editar</button>
+                    <button className="text-xs font-bold text-gray-400 hover:text-red-500">Remover</button>
+                </div>
+            </div>
+            <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm space-y-3 hover:border-primary/50 transition-colors group cursor-pointer">
+                <div className="flex items-center gap-3 text-gray-400 group-hover:text-primary">
+                    <span className="material-symbols-outlined">work</span>
+                    <span className="font-bold">Trabalho</span>
+                </div>
+                <p className="text-sm font-bold">Av. Sete de Setembro, 4500</p>
+                <p className="text-xs text-gray-500">Batel, Curitiba - PR</p>
+                <p className="text-xs text-gray-500">CEP: 80240-000</p>
+                <div className="flex gap-4 pt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button className="text-xs font-bold text-primary hover:underline">Editar</button>
+                    <button className="text-xs font-bold text-gray-400 hover:text-red-500">Remover</button>
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
+// --- Page: Patient Reports ---
+const PatientReportsPage = () => {
+    const [humor, setHumor] = useState('BOM');
+    const [painLevel, setPainLevel] = useState(2);
+
+    return (
+        <div className="space-y-8 pb-20 md:pb-0">
+            <header className="flex flex-wrap justify-between items-start gap-4">
+                <div className="space-y-1">
+                    <h2 className="text-3xl font-black tracking-tight dark:text-white">Relatos do Paciente</h2>
+                    <p className="text-[#4e9767] text-base">Acompanhe seu tratamento e compartilhe seu progresso.</p>
+                </div>
+                <div className="flex gap-3">
+                    <div className="bg-white dark:bg-[#1a2e20] p-3 px-5 rounded-xl border border-gray-100 dark:border-white/10 flex items-center gap-3 shadow-sm">
+                        <span className="material-symbols-outlined text-primary">analytics</span>
+                        <div>
+                            <p className="text-xs text-gray-500">Adesão</p>
+                            <p className="font-bold">92%</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 space-y-8">
+                    {/* Medicamentos Section */}
+                    <section className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-xl font-bold flex items-center gap-2">
+                                <span className="material-symbols-outlined text-primary">medication</span>
+                                Medicamentos em Uso
+                            </h3>
+                        </div>
+                        <div className="grid gap-4">
+                            <div className="bg-white dark:bg-[#1a2e20] p-5 rounded-xl border border-gray-100 dark:border-white/10 flex items-center gap-4 hover:border-primary/30 transition-colors">
+                                <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                                    <span className="material-symbols-outlined text-3xl">opacity</span>
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="font-bold text-base">Óleo CBD Full Spectrum 10%</h4>
+                                    <p className="text-sm text-gray-500">3 gotas • 2x ao dia (Manhã/Noite)</p>
+                                </div>
+                                <div className="text-right">
+                                    <span className="text-xs font-semibold px-2 py-1 bg-primary/10 text-primary rounded-full uppercase">Em uso</span>
+                                </div>
+                            </div>
+                            <div className="bg-white dark:bg-[#1a2e20] p-5 rounded-xl border border-gray-100 dark:border-white/10 flex items-center gap-4 hover:border-primary/30 transition-colors">
+                                <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                                    <span className="material-symbols-outlined text-3xl">medical_services</span>
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="font-bold text-base">Cápsula Noturna THC:CBD</h4>
+                                    <p className="text-sm text-gray-500">1 cápsula • 1x ao dia (Antes de dormir)</p>
+                                </div>
+                                <div className="text-right">
+                                    <span className="text-xs font-semibold px-2 py-1 bg-primary/10 text-primary rounded-full uppercase">Em uso</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Diário de Sintomas Section */}
+                    <section className="bg-white dark:bg-[#1a2e20] p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm space-y-6">
+                        <h3 className="text-xl font-bold flex items-center gap-2">
+                            <span className="material-symbols-outlined text-primary">mood</span>
+                            Diário de Sintomas
+                        </h3>
+                        <div className="space-y-8">
+                            <div className="space-y-4">
+                                <p className="text-sm font-bold text-gray-700 dark:text-gray-300 px-1">Como está seu humor hoje?</p>
+                                <div className="flex justify-between gap-2">
+                                    {[
+                                        { icon: '😞', label: 'PÉSSIMO' },
+                                        { icon: '😐', label: 'NEUTRO' },
+                                        { icon: '🙂', label: 'BOM' },
+                                        { icon: '😊', label: 'ÓTIMO' }
+                                    ].map((item) => (
+                                        <button
+                                            key={item.label}
+                                            onClick={() => setHumor(item.label)}
+                                            className={`flex-1 py-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${humor === item.label
+                                                ? 'border-primary bg-primary/5'
+                                                : 'border-gray-100 dark:border-white/5 hover:border-primary/50'
+                                                }`}
+                                        >
+                                            <span className="text-3xl">{item.icon}</span>
+                                            <span className={`text-[10px] font-bold ${humor === item.label ? 'text-primary' : 'text-gray-400'}`}>
+                                                {item.label}
+                                            </span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center px-1">
+                                    <p className="text-sm font-bold text-gray-700 dark:text-gray-300">Nível de Dor ou Desconforto</p>
+                                    <span className="text-primary font-bold text-sm">Nível {painLevel}</span>
+                                </div>
+                                <div className="flex gap-1 h-10">
+                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((level) => (
+                                        <button
+                                            key={level}
+                                            onClick={() => setPainLevel(level)}
+                                            className={`flex-1 rounded transition-colors ${level <= painLevel ? 'bg-primary' : 'bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20'
+                                                }`}
+                                        />
+                                    ))}
+                                </div>
+                                <div className="flex justify-between text-[10px] font-bold text-gray-400 uppercase px-1">
+                                    <span>Sem Dor</span>
+                                    <span>Dor Moderada</span>
+                                    <span>Dor Intensa</span>
+                                </div>
+                            </div>
+                            <textarea
+                                className="w-full p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 text-sm focus:ring-primary focus:border-primary outline-none transition-all resize-none"
+                                placeholder="Observações adicionais em relação ao tratamento hoje..."
+                                rows={3}
+                            ></textarea>
+                            <button className="w-full bg-primary text-[#0e1b12] font-black py-4 rounded-xl hover:scale-[1.01] active:scale-100 shadow-xl shadow-primary/20 transition-all">
+                                Salvar Relato Diário
+                            </button>
+                        </div>
+                    </section>
+                </div>
+
+                <div className="space-y-8">
+                    {/* Document Upload Section */}
+                    <section className="bg-white dark:bg-[#1a2e20] p-6 rounded-xl border border-gray-100 dark:border-white/10 shadow-sm space-y-4">
+                        <h3 className="text-lg font-bold flex items-center gap-2">
+                            <span className="material-symbols-outlined text-primary">upload_file</span>
+                            Compartilhar com Médico
+                        </h3>
+                        <div className="border-2 border-dashed border-gray-200 dark:border-white/10 rounded-xl p-8 flex flex-col items-center justify-center text-center gap-3 hover:border-primary/50 transition-colors cursor-pointer group">
+                            <span className="material-symbols-outlined text-4xl text-gray-300 group-hover:text-primary transition-colors">cloud_upload</span>
+                            <div className="space-y-1">
+                                <p className="text-sm font-bold">Arraste seus documentos aqui</p>
+                                <p className="text-xs text-gray-500">Exames, laudos ou receitas (PDF, JPG)</p>
+                            </div>
+                            <button className="mt-2 text-primary text-xs font-bold px-4 py-2 border border-primary/20 rounded-lg hover:bg-primary/5">Selecionar Arquivo</button>
+                        </div>
+                        <div className="space-y-2">
+                            <p className="text-[10px] font-bold text-gray-400 uppercase">Arquivos Recentes</p>
+                            <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10">
+                                <span className="material-symbols-outlined text-amber-500">description</span>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-bold truncate">Exame_Sangue_Jan23.pdf</p>
+                                    <p className="text-[10px] text-gray-500">Enviado em 15/08</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Adjustment Section */}
+                    <section className="bg-white dark:bg-[#1a2e20] p-6 rounded-xl border border-gray-100 dark:border-white/10 shadow-sm space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-amber-100 dark:bg-amber-500/20 rounded-lg flex items-center justify-center text-amber-600 dark:text-amber-500">
+                                <span className="material-symbols-outlined">tune</span>
+                            </div>
+                            <h3 className="text-lg font-bold">Ajuste de Dose</h3>
+                        </div>
+                        <p className="text-sm text-gray-500 leading-relaxed">Sentindo que a dose não está ideal? Fale com nossa equipe técnica.</p>
+                        <div className="flex flex-col gap-2">
+                            <button className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-primary text-primary font-bold text-sm hover:bg-primary/5 transition-all active:scale-[0.98]">
+                                <span className="material-symbols-outlined text-sm">medication_liquid</span>
+                                Solicitar Ajuste ao Médico
+                            </button>
+                            <button className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#25D366] text-white font-bold text-sm hover:opacity-90 transition-all active:scale-[0.98] shadow-lg shadow-[#25D366]/20">
+                                <span className="material-symbols-outlined text-sm">support_agent</span>
+                                Falar com Farmacêutico
+                            </button>
+                        </div>
+                    </section>
+
+                    {/* Concierge Note */}
+                    <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 relative overflow-hidden">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="relative">
+                                <div className="w-12 h-12 rounded-full bg-cover bg-center border-2 border-primary" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuD80dArObbYpuXgVgJ8NNJ7sYtznk2tjUDomJsAvfvtiM4vNnQMVbEkd0bYqCrSGFsH_JTgANLQO7YIw0Nfh_1MsGQtU8iZtBt5fNeOs5uvVGr3TK8QEGwzl9dUeK4RW_0_A287HMttjG1ZNMh7ts4qohYVfZTD0qjTdnVa9QWGSXQJDPnFC3uFlI3K1eO3b4T-gqUZ3FNvutAjaDM5W90uNEa-grRuYGvoguFLn07zYHQh9c_tS8ADOvNbNT2ky4AFaSgoMbrmnTg')" }}></div>
+                                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                            </div>
+                            <div>
+                                <p className="font-bold text-sm">Dra. Letícia</p>
+                                <p className="text-[10px] text-[#4e9767] font-black uppercase tracking-wider">Sua Concierge</p>
+                            </div>
+                        </div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed italic relative z-10">
+                            "Estou acompanhando seus relatos. Se os sintomas de dor persistirem acima do nível 5, por favor, me avise imediatamente."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 // --- Page: Pharmacy ---
 const PharmacyPage = ({ onProductSelect, onAddToCart, onCartClick, cart, cartSubtotal }: { onProductSelect: (product: any) => void, onAddToCart: (product: any) => void, onCartClick: () => void, cart: CartItem[], cartSubtotal: number }) => {
@@ -1576,6 +1836,7 @@ export default function App() {
     const [selectedProduct, setSelectedProduct] = useState<any>(null);
     const [cart, setCart] = useState<CartItem[]>([]);
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isPharmacyExpanded, setIsPharmacyExpanded] = useState(true);
 
     const cartSubtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
@@ -1595,7 +1856,6 @@ export default function App() {
                 quantity: qty
             }];
         });
-        alert(`${qty} item(ns) adicionado(s) ao carrinho!`);
     };
 
     const updateCartQuantity = (name: string, delta: number) => {
@@ -1651,8 +1911,35 @@ export default function App() {
                     </div>
                     <nav className="flex flex-col gap-1">
                         <SidebarItem icon="grid_view" label="Dashboard" active={activePage === 'dashboard'} onClick={() => setActivePage('dashboard')} />
-                        <SidebarItem icon="shopping_basket" label="Farmácia Medicinal" active={activePage === 'pharmacy'} onClick={() => setActivePage('pharmacy')} />
-                        <SidebarItem icon="shopping_bag" label="Meus Pedidos" active={activePage === 'orders'} onClick={() => setActivePage('orders')} />
+                        <SidebarItem icon="edit_note" label="Relatos do Paciente" active={activePage === 'reports'} onClick={() => setActivePage('reports')} />
+
+                        <div className="flex flex-col gap-1 mt-2">
+                            <SidebarItem
+                                icon="shopping_basket"
+                                label="Farmácia Medicinal"
+                                active={['pharmacy', 'cart', 'orders', 'addresses', 'product_details'].includes(activePage)}
+                                onClick={() => setIsPharmacyExpanded(!isPharmacyExpanded)}
+                                hasSubmenu={true}
+                                isExpanded={isPharmacyExpanded}
+                            />
+                            <AnimatePresence>
+                                {isPharmacyExpanded && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                                        className="flex flex-col gap-0.5 mb-2 overflow-hidden"
+                                    >
+                                        <SidebarSubItem label="Medicamentos" active={activePage === 'pharmacy' || activePage === 'product_details'} onClick={() => setActivePage('pharmacy')} />
+                                        <SidebarSubItem label="Meu Carrinho" active={activePage === 'cart'} onClick={() => setActivePage('cart')} />
+                                        <SidebarSubItem label="Meus Pedidos" active={activePage === 'orders'} onClick={() => setActivePage('orders')} />
+                                        <SidebarSubItem label="Meus Endereços" active={activePage === 'addresses'} onClick={() => setActivePage('addresses')} />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
                         <SidebarItem icon="calendar_month" label="Consultas" active={activePage === 'appointments'} onClick={() => setActivePage('appointments')} />
                         <SidebarItem icon="medication" label="Profissionais" active={activePage === 'professionals'} onClick={() => setActivePage('professionals')} />
                     </nav>
@@ -1715,7 +2002,9 @@ export default function App() {
                                             activePage === 'payment_success' ? 'Pedido Confirmado' :
                                                 activePage === 'orders' ? 'Meus Pedidos' :
                                                     activePage === 'appointments' ? 'Consultas' :
-                                                        'Profissionais'}
+                                                        activePage === 'addresses' ? 'Meus Endereços' :
+                                                            activePage === 'reports' ? 'Relatos do Paciente' :
+                                                                'Profissionais'}
                         </h2>
                         <div className="flex items-center gap-2 md:gap-4">
                             <button onClick={toggleDarkMode} className="lg:hidden p-2 rounded-lg text-gray-400 border border-gray-100 dark:border-white/5">
@@ -1740,7 +2029,10 @@ export default function App() {
                                         setSelectedProduct(product);
                                         setActivePage('product_details');
                                     }}
-                                    onAddToCart={(product) => addToCart(product, 1)}
+                                    onAddToCart={(product) => {
+                                        addToCart(product, 1);
+                                        setActivePage('cart');
+                                    }}
                                     onCartClick={() => setActivePage('cart')}
                                     cart={cart}
                                     cartSubtotal={cartSubtotal}
@@ -1770,11 +2062,16 @@ export default function App() {
                             {activePage === 'orders' && <OrdersPage />}
                             {activePage === 'appointments' && <AppointmentsPage />}
                             {activePage === 'professionals' && <ProfessionalsPage />}
+                            {activePage === 'addresses' && <AddressesPage />}
+                            {activePage === 'reports' && <PatientReportsPage />}
                             {activePage === 'product_details' && selectedProduct && (
                                 <ProductDetailsPage
                                     product={selectedProduct}
                                     onBack={() => setActivePage('pharmacy')}
-                                    onAddToCart={addToCart}
+                                    onAddToCart={(product, qty) => {
+                                        addToCart(product, qty);
+                                        setActivePage('cart');
+                                    }}
                                 />
                             )}
                         </motion.div>
