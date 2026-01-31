@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Types ---
@@ -1326,7 +1326,7 @@ const AppointmentsPage = () => (
 );
 
 // --- Page: Login ---
-const LoginPage = ({ onLogin, onSwitchToRegister }: { onLogin: () => void, onSwitchToRegister: () => void }) => {
+const LoginPage = ({ onLogin, onSwitchToRegister, isDarkMode }: { onLogin: () => void, onSwitchToRegister: () => void, isDarkMode: boolean }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -1408,7 +1408,10 @@ const LoginPage = ({ onLogin, onSwitchToRegister }: { onLogin: () => void, onSwi
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                    style={{
+                                        WebkitBoxShadow: `0 0 0px 1000px ${isDarkMode ? '#1a2e20' : '#f1f5f9'} inset`,
+                                        WebkitTextFillColor: isDarkMode ? '#fff' : '#0e1b12'
+                                    }}
                                 />
                             </div>
                         </div>
@@ -1425,7 +1428,10 @@ const LoginPage = ({ onLogin, onSwitchToRegister }: { onLogin: () => void, onSwi
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                    style={{
+                                        WebkitBoxShadow: `0 0 0px 1000px ${isDarkMode ? '#1a2e20' : '#f1f5f9'} inset`,
+                                        WebkitTextFillColor: isDarkMode ? '#fff' : '#0e1b12'
+                                    }}
                                 />
                                 <button className="absolute right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" type="button">
                                     <span className="material-symbols-outlined">visibility</span>
@@ -1455,7 +1461,7 @@ const LoginPage = ({ onLogin, onSwitchToRegister }: { onLogin: () => void, onSwi
 };
 
 // --- Page: Register ---
-const RegisterPage = ({ onBackToLogin }: { onBackToLogin: () => void }) => {
+const RegisterPage = ({ onBackToLogin, isDarkMode }: { onBackToLogin: () => void, isDarkMode: boolean }) => {
     const [step, setStep] = useState(1);
     const [userType, setUserType] = useState('paciente');
 
@@ -1571,7 +1577,10 @@ const RegisterPage = ({ onBackToLogin }: { onBackToLogin: () => void }) => {
                                                     id="fullname"
                                                     placeholder="Seu nome completo"
                                                     type="text"
-                                                    style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                                    style={{
+                                                        WebkitBoxShadow: `0 0 0px 1000px ${isDarkMode ? '#1a2e20' : '#f1f5f9'} inset`,
+                                                        WebkitTextFillColor: isDarkMode ? '#fff' : '#0e1b12'
+                                                    }}
                                                 />
                                             </div>
                                             <div className="space-y-1.5">
@@ -1581,7 +1590,10 @@ const RegisterPage = ({ onBackToLogin }: { onBackToLogin: () => void }) => {
                                                     id="email"
                                                     placeholder="seu@email.com"
                                                     type="email"
-                                                    style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                                    style={{
+                                                        WebkitBoxShadow: `0 0 0px 1000px ${isDarkMode ? '#1a2e20' : '#f1f5f9'} inset`,
+                                                        WebkitTextFillColor: isDarkMode ? '#fff' : '#0e1b12'
+                                                    }}
                                                 />
                                             </div>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -1592,7 +1604,10 @@ const RegisterPage = ({ onBackToLogin }: { onBackToLogin: () => void }) => {
                                                         id="cpf"
                                                         placeholder="000.000.000-00"
                                                         type="text"
-                                                        style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                                        style={{
+                                                            WebkitBoxShadow: `0 0 0px 1000px ${isDarkMode ? '#1a2e20' : '#f1f5f9'} inset`,
+                                                            WebkitTextFillColor: isDarkMode ? '#fff' : '#0e1b12'
+                                                        }}
                                                     />
                                                 </div>
                                                 <div className="space-y-1.5">
@@ -1600,7 +1615,10 @@ const RegisterPage = ({ onBackToLogin }: { onBackToLogin: () => void }) => {
                                                     <select
                                                         className="block w-full px-4 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white"
                                                         id="association"
-                                                        style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                                        style={{
+                                                            WebkitBoxShadow: `0 0 0px 1000px ${isDarkMode ? '#1a2e20' : '#f1f5f9'} inset`,
+                                                            WebkitTextFillColor: isDarkMode ? '#fff' : '#0e1b12'
+                                                        }}
                                                     >
                                                         <option disabled value="">Vínculo opcional</option>
                                                         <option value="1">Associação Abrace Esperança</option>
@@ -1625,7 +1643,10 @@ const RegisterPage = ({ onBackToLogin }: { onBackToLogin: () => void }) => {
                                                     id="password"
                                                     placeholder="Mínimo 8 caracteres"
                                                     type="password"
-                                                    style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                                    style={{
+                                                        WebkitBoxShadow: `0 0 0px 1000px ${isDarkMode ? '#1a2e20' : '#f1f5f9'} inset`,
+                                                        WebkitTextFillColor: isDarkMode ? '#fff' : '#0e1b12'
+                                                    }}
                                                 />
                                             </div>
                                         </div>
@@ -1638,7 +1659,10 @@ const RegisterPage = ({ onBackToLogin }: { onBackToLogin: () => void }) => {
                                                     id="confirm-password"
                                                     placeholder="Repita sua senha"
                                                     type="password"
-                                                    style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                                    style={{
+                                                        WebkitBoxShadow: `0 0 0px 1000px ${isDarkMode ? '#1a2e20' : '#f1f5f9'} inset`,
+                                                        WebkitTextFillColor: isDarkMode ? '#fff' : '#0e1b12'
+                                                    }}
                                                 />
                                             </div>
                                         </div>
@@ -2051,9 +2075,23 @@ export default function App() {
     const [activePage, setActivePage] = useState<Page>('dashboard');
     const [selectedProduct, setSelectedProduct] = useState<any>(null);
     const [cart, setCart] = useState<CartItem[]>([]);
-    const [isDarkMode, setIsDarkMode] = useState(false);
-    const [isPharmacyExpanded, setIsPharmacyExpanded] = useState(true);
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        const saved = localStorage.getItem('theme');
+        if (saved) return saved === 'dark';
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    });
+    const [isPharmacyExpanded, setIsPharmacyExpanded] = useState(false);
     const [isDocumentsExpanded, setIsDocumentsExpanded] = useState(false);
+
+    useEffect(() => {
+        if (isDarkMode) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    }, [isDarkMode]);
 
     const cartSubtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
@@ -2089,7 +2127,6 @@ export default function App() {
 
     const toggleDarkMode = () => {
         setIsDarkMode(!isDarkMode);
-        document.documentElement.classList.toggle('dark');
     };
 
     const handleLogin = () => {
@@ -2103,12 +2140,12 @@ export default function App() {
 
     if (!isAuthenticated) {
         return authView === 'login'
-            ? <LoginPage onLogin={handleLogin} onSwitchToRegister={() => setAuthView('register')} />
-            : <RegisterPage onBackToLogin={() => setAuthView('login')} />;
+            ? <LoginPage onLogin={handleLogin} onSwitchToRegister={() => setAuthView('register')} isDarkMode={isDarkMode} />
+            : <RegisterPage onBackToLogin={() => setAuthView('login')} isDarkMode={isDarkMode} />;
     }
 
     return (
-        <div className={`flex h-screen overflow-hidden ${isDarkMode ? 'dark' : ''} bg-background-light dark:bg-background-dark text-text-main dark:text-white font-display transition-colors duration-200`}>
+        <div className={`flex h-screen overflow-hidden bg-background-light dark:bg-background-dark text-text-main dark:text-white font-display transition-colors duration-200`}>
             {/* Desktop Sidebar */}
             <aside className="hidden lg:flex w-72 flex-shrink-0 border-r border-gray-200 dark:border-white/10 bg-white dark:bg-dark-surface flex-col p-6 overflow-y-auto scrollbar-hide">
                 <div className="flex flex-col gap-8">
