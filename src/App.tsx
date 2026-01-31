@@ -2160,7 +2160,8 @@ const ProductDetailsPage = ({ product, onBack, onAddToCart }: { product: any, on
                             className="flex-1 bg-primary text-[#0e1b12] font-black py-4 rounded-xl shadow-xl shadow-primary/20 flex items-center justify-center gap-3 hover:bg-primary/90 transition-all hover:scale-[1.02] active:scale-100"
                         >
                             <span className="material-symbols-outlined">add_shopping_cart</span>
-                            Adicionar ao Carrinho
+                            <span className="hidden sm:inline">Adicionar ao Carrinho</span>
+                            <span className="sm:hidden">Adicionar</span>
                         </button>
                     </div>
                 </div>
