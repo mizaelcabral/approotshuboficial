@@ -2085,6 +2085,7 @@ export default function App() {
     });
     const [isPharmacyExpanded, setIsPharmacyExpanded] = useState(false);
     const [isDocumentsExpanded, setIsDocumentsExpanded] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     useEffect(() => {
         if (isDarkMode) {
@@ -2272,6 +2273,9 @@ export default function App() {
                 <header className="bg-white dark:bg-dark-surface border-b border-gray-100 dark:border-white/10 px-4 md:px-8 py-4 sticky top-0 z-10 transition-colors">
                     <div className="max-w-6xl mx-auto flex items-center justify-between">
                         <div className="flex items-center gap-3 lg:hidden">
+                            <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -ml-2 text-gray-400 hover:text-primary transition-colors">
+                                <span className="material-symbols-outlined">menu</span>
+                            </button>
                             <div className="bg-primary p-1.5 rounded-lg text-white">
                                 <span className="material-symbols-outlined text-xl font-bold">eco</span>
                             </div>
@@ -2365,6 +2369,133 @@ export default function App() {
                     </AnimatePresence>
                 </div>
             </main>
+
+            {/* Mobile Sidebar Menu */}
+            <AnimatePresence>
+                {isMobileMenuOpen && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]"
+                        />
+                        <motion.div
+                            initial={{ x: '-100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '-100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="lg:hidden fixed inset-y-0 left-0 w-[280px] bg-white dark:bg-dark-surface z-[101] shadow-2xl flex flex-col p-6"
+                        >
+                            <div className="flex items-center justify-between mb-8">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-primary/20 p-2 rounded-lg">
+                                        <span className="material-symbols-outlined text-primary text-2xl font-bold">eco</span>
+                                    </div>
+                                    <h1 className="text-lg font-bold uppercase tracking-wider">Rootcare</h1>
+                                </div>
+                                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-gray-400 hover:text-primary transition-colors">
+                                    <span className="material-symbols-outlined">close</span>
+                                </button>
+                            </div>
+
+                            <nav className="flex flex-col gap-1 overflow-y-auto scrollbar-hide">
+                                <SidebarItem
+                                    icon="grid_view"
+                                    label="Dashboard"
+                                    active={activePage === 'dashboard'}
+                                    onClick={() => { setActivePage('dashboard'); setIsMobileMenuOpen(false); }}
+                                />
+                                <SidebarItem
+                                    icon="edit_note"
+                                    label="Relatos do Paciente"
+                                    active={activePage === 'reports'}
+                                    onClick={() => { setActivePage('reports'); setIsMobileMenuOpen(false); }}
+                                />
+
+                                <div className="flex flex-col gap-1 mt-2">
+                                    <SidebarItem
+                                        icon="shopping_basket"
+                                        label="Farmácia Medicinal"
+                                        active={['pharmacy', 'cart', 'orders', 'addresses', 'product_details'].includes(activePage)}
+                                        onClick={() => setIsPharmacyExpanded(!isPharmacyExpanded)}
+                                        hasSubmenu={true}
+                                        isExpanded={isPharmacyExpanded}
+                                    />
+                                    <AnimatePresence>
+                                        {isPharmacyExpanded && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: 'auto', opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                className="flex flex-col gap-0.5 mb-2 overflow-hidden pl-4"
+                                            >
+                                                <SidebarSubItem label="Medicamentos" active={activePage === 'pharmacy'} onClick={() => { setActivePage('pharmacy'); setIsMobileMenuOpen(false); }} />
+                                                <SidebarSubItem label="Meu Carrinho" active={activePage === 'cart'} onClick={() => { setActivePage('cart'); setIsMobileMenuOpen(false); }} />
+                                                <SidebarSubItem label="Meus Pedidos" active={activePage === 'orders'} onClick={() => { setActivePage('orders'); setIsMobileMenuOpen(false); }} />
+                                                <SidebarSubItem label="Meus Endereços" active={activePage === 'addresses'} onClick={() => { setActivePage('addresses'); setIsMobileMenuOpen(false); }} />
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+
+                                <SidebarItem
+                                    icon="calendar_month"
+                                    label="Consultas"
+                                    active={activePage === 'appointments'}
+                                    onClick={() => { setActivePage('appointments'); setIsMobileMenuOpen(false); }}
+                                />
+
+                                <div className="flex flex-col gap-1 mt-2">
+                                    <SidebarItem
+                                        icon="folder_shared"
+                                        label="Documentação"
+                                        active={activePage === 'documents' || activePage === 'anvisa'}
+                                        onClick={() => setIsDocumentsExpanded(!isDocumentsExpanded)}
+                                        hasSubmenu={true}
+                                        isExpanded={isDocumentsExpanded}
+                                    />
+                                    <AnimatePresence>
+                                        {isDocumentsExpanded && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: 'auto', opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                className="flex flex-col gap-0.5 mb-2 overflow-hidden pl-4"
+                                            >
+                                                <SidebarSubItem label="Meus Arquivos" active={activePage === 'documents'} onClick={() => { setActivePage('documents'); setIsMobileMenuOpen(false); }} />
+                                                <SidebarSubItem label="Autorização Anvisa" active={activePage === 'anvisa'} onClick={() => { setActivePage('anvisa'); setIsMobileMenuOpen(false); }} />
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+
+                                <SidebarItem
+                                    icon="medication"
+                                    label="Profissionais"
+                                    active={activePage === 'professionals'}
+                                    onClick={() => { setActivePage('professionals'); setIsMobileMenuOpen(false); }}
+                                />
+                            </nav>
+
+                            <div className="mt-auto pt-6 border-t border-gray-100 dark:border-white/10">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="w-10 h-10 rounded-full bg-gray-200" />
+                                    <div className="flex flex-col">
+                                        <p className="text-sm font-bold">João Silva</p>
+                                        <p className="text-xs text-gray-500">ID: #4429</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 font-bold transition-all hover:bg-red-100 dark:hover:bg-red-500/20">
+                                    <span className="material-symbols-outlined text-sm">logout</span>
+                                    <span>Sair da conta</span>
+                                </button>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
 
             <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 8px; }
