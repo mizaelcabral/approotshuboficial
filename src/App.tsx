@@ -2303,7 +2303,6 @@ export default function App() {
                                 <span className="text-[10px] font-bold text-primary uppercase">Status Financeiro</span>
                                 <span className="text-xs font-bold text-green-600">Regular</span>
                             </div>
-                            <button className="bg-primary/10 text-primary px-3 md:px-4 py-1.5 md:py-2 rounded-lg font-bold text-[10px] md:text-sm border border-primary/20">ID Digital</button>
                         </div>
                     </div>
                 </header>
