@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Types ---
-type Page = 'dashboard' | 'orders' | 'appointments' | 'professionals' | 'pharmacy' | 'product_details' | 'cart' | 'checkout' | 'payment_success' | 'addresses' | 'reports' | 'documents' | 'anvisa';
+type Page = 'dashboard' | 'orders' | 'appointments' | 'professionals' | 'pharmacy' | 'product_details' | 'cart' | 'checkout' | 'payment_success' | 'addresses' | 'reports' | 'documents' | 'anvisa' | 'profile';
 
 interface CartItem {
     name: string;
@@ -155,184 +155,394 @@ const MedicationCard = ({ icon, title, dosage, status, nextTime, completed = fal
 );
 
 // --- Page: Dashboard ---
-const DashboardPage = () => (
-    <div className="space-y-8">
+const DashboardPage = ({ setActivePage }: { setActivePage: (page: Page) => void }) => (
+    <div className="space-y-8 pb-12">
         {/* Welcome Section */}
         <header className="flex flex-wrap justify-between items-center gap-4">
             <div className="space-y-1">
                 <h2 className="text-xl md:text-3xl font-black tracking-tight dark:text-white leading-tight">Olá, João Silva</h2>
-                <p className="text-[#4e9767] text-sm md:text-base font-medium">Acompanhe aqui o seu progresso e tratamento medicinal.</p>
+                <p className="text-[#4e9767] text-sm md:text-base font-medium">Seu resumo de hoje, 31 de Janeiro.</p>
             </div>
-            <div className="hidden sm:flex items-center gap-4">
-                <div className="bg-white dark:bg-[#1a2e20] p-3 rounded-xl border border-gray-100 dark:border-white/10 flex items-center gap-3">
-                    <span className="material-symbols-outlined text-primary">calendar_today</span>
-                    <div className="text-sm">
-                        <p className="font-bold">Próxima Consulta</p>
-                        <p className="text-gray-500">24 de Set, 14:30</p>
+            <div className="flex items-center gap-6">
+                <div className="hidden sm:flex flex-col items-end">
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Status Financeiro</span>
+                    <span className="text-sm font-black text-green-600">Regular</span>
+                </div>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setActivePage('profile')}
+                        className="p-2 border border-gray-100 dark:border-white/10 rounded-xl bg-white dark:bg-dark-surface shadow-sm hover:border-primary/50 transition-all flex items-center gap-2"
+                    >
+                        <span className="material-symbols-outlined text-primary text-sm">settings</span>
+                        <span className="text-xs font-bold px-1">Ajustes</span>
+                    </button>
+                    <div className="hidden sm:flex bg-primary/10 border border-primary/20 px-4 py-2 rounded-xl items-center gap-3">
+                        <span className="material-symbols-outlined text-primary text-xl">military_tech</span>
+                        <span className="text-xs font-black text-primary uppercase tracking-tighter">Isenção 100%</span>
                     </div>
                 </div>
             </div>
         </header>
 
-        {/* Top Grid: Progress and Quick Action */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Hub Row 1: Core Status */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Progress Card */}
-            <div className="lg:col-span-2 bg-white dark:bg-[#1a2e20] p-6 rounded-xl border border-gray-100 dark:border-white/10 shadow-sm space-y-4">
-                <div className="flex justify-between items-center">
-                    <h3 className="font-bold text-lg flex items-center gap-2">
-                        <span className="material-symbols-outlined text-primary">insights</span>
-                        Progresso do Tratamento
-                    </h3>
-                    <span className="text-primary font-black text-xl">65%</span>
+            <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm space-y-3">
+                <div className="flex items-center justify-between">
+                    <span className="material-symbols-outlined text-primary text-2xl">insights</span>
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Tratamento</span>
                 </div>
-                <div className="w-full bg-gray-100 dark:bg-white/10 h-3 rounded-full overflow-hidden">
-                    <div className="bg-primary h-full rounded-full transition-all duration-1000" style={{ width: '65%' }}></div>
+                <div>
+                    <h3 className="text-2xl font-black">65%</h3>
+                    <p className="text-xs text-gray-500 font-medium">Progresso da Fase Atual</p>
                 </div>
-                <p className="text-sm text-gray-500">Você está na fase de <strong>ajuste de dosagem</strong>. Mantenha seus relatos em dia para melhores resultados.</p>
+                <div className="w-full bg-gray-100 dark:bg-white/5 h-1.5 rounded-full overflow-hidden">
+                    <div className="bg-primary h-full rounded-full w-[65%] shadow-[0_0_8px_rgba(78,151,103,0.5)]" />
+                </div>
             </div>
-            {/* CTA Quick Action */}
-            <div className="bg-primary p-6 rounded-xl shadow-lg shadow-primary/20 flex flex-col justify-between items-start group cursor-pointer hover:scale-[1.02] transition-transform">
-                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center text-white mb-4">
-                    <span className="material-symbols-outlined text-3xl">edit_note</span>
+
+            {/* Logistics Hub Snippet */}
+            <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm space-y-3">
+                <div className="flex items-center justify-between">
+                    <span className="material-symbols-outlined text-blue-500 text-2xl">local_shipping</span>
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Logística</span>
                 </div>
-                <div className="space-y-1">
-                    <h3 className="text-white text-xl font-bold leading-tight">Relatos do Tratamento</h3>
-                    <p className="text-white/80 text-sm">Como você está se sentindo hoje?</p>
+                <div className="min-w-0">
+                    <h3 className="text-sm font-bold truncate">Rua das Flores, 123</h3>
+                    <p className="text-[10px] text-gray-500 font-medium">Destino Principal • Curitiba</p>
                 </div>
-                <button className="mt-4 flex items-center gap-2 bg-white text-primary px-4 py-2 rounded-lg font-bold text-sm shadow-sm">
-                    Registrar Agora
-                    <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                </button>
+                <button onClick={() => setActivePage('addresses')} className="text-[10px] font-black text-primary uppercase hover:underline">Alterar Endereço</button>
+            </div>
+
+            {/* Documentation Hub Snippet */}
+            <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm space-y-3">
+                <div className="flex items-center justify-between">
+                    <span className="material-symbols-outlined text-amber-500 text-2xl">description</span>
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Documentação</span>
+                </div>
+                <div>
+                    <h3 className="text-sm font-bold">Receita: Válida</h3>
+                    <p className="text-[10px] text-amber-600 font-black uppercase tracking-tight">Expira em 45 dias</p>
+                </div>
+                <button onClick={() => setActivePage('documents')} className="text-[10px] font-black text-primary uppercase hover:underline">Ver Receita Digital</button>
+            </div>
+
+            {/* Next Appointment Card */}
+            <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/10 relative overflow-hidden group">
+                <div className="absolute -right-4 -top-4 size-20 bg-primary/10 rounded-full blur-2xl group-hover:scale-150 transition-all duration-700" />
+                <div className="relative z-10 flex flex-col h-full justify-between">
+                    <div>
+                        <span className="material-symbols-outlined text-primary text-2xl mb-1">calendar_today</span>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Próxima Consulta</p>
+                    </div>
+                    <div>
+                        <h3 className="text-gray-900 dark:text-white text-base font-bold leading-tight">Dra. Letícia</h3>
+                        <p className="text-primary text-xs font-black">24 de Set, 14:30</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        {/* Main Grid: Medications and Support */}
+        {/* Main Content Area */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Medications Section */}
-            <div className="lg:col-span-2 space-y-4">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-bold px-1">Meus Medicamentos</h3>
-                    <button className="text-primary text-sm font-bold hover:underline">Ver prescrição completa</button>
+            {/* Medications Column */}
+            <div className="lg:col-span-2 space-y-6">
+                <div className="flex items-center justify-between px-1">
+                    <h3 className="text-xl font-black tracking-tight">Tratamento Diário</h3>
+                    <button onClick={() => setActivePage('pharmacy')} className="text-primary text-xs font-black uppercase hover:underline">Farmácia</button>
                 </div>
+
                 <div className="grid gap-4">
-                    {/* Med Item 1 */}
-                    <div className="bg-white dark:bg-[#1a2e20] p-5 rounded-xl border border-gray-100 dark:border-white/10 flex items-center gap-4 hover:border-primary/40 transition-colors group">
-                        <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                    <div className="bg-white dark:bg-dark-surface p-5 rounded-2xl border border-gray-100 dark:border-white/10 flex items-center gap-5 hover:border-primary/40 transition-all shadow-sm group">
+                        <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                             <span className="material-symbols-outlined text-3xl">opacity</span>
                         </div>
                         <div className="flex-1">
-                            <h4 className="font-bold text-base">Óleo CBD Full Spectrum 10%</h4>
-                            <p className="text-sm text-gray-500">Sublingual • 3 gotas • 2x ao dia</p>
+                            <h4 className="font-bold text-base leading-tight">Óleo CBD Full Spectrum 10%</h4>
+                            <p className="text-sm text-gray-500 font-medium">Sublingual • 3 gotas • Próxima: 20:00</p>
                         </div>
-                        <div className="text-right flex flex-col items-end gap-2">
-                            <span className="px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold uppercase rounded">Próxima: 20:00</span>
-                            <button className="bg-gray-100 dark:bg-white/5 p-2 rounded-lg text-gray-400 group-hover:text-primary transition-colors">
-                                <span className="material-symbols-outlined">check_circle</span>
+                        <div className="flex items-center gap-2">
+                            <div className="hidden sm:flex flex-col items-end mr-2">
+                                <span className="text-[8px] font-black text-gray-400 uppercase">Estoque</span>
+                                <span className="text-xs font-bold text-green-600">Regular</span>
+                            </div>
+                            <button className="bg-primary/10 text-primary p-2.5 rounded-xl hover:bg-primary transition-colors">
+                                <span className="material-symbols-outlined text-lg">check</span>
                             </button>
                         </div>
                     </div>
-                    {/* Med Item 2 */}
-                    <div className="bg-white dark:bg-[#1a2e20] p-5 rounded-xl border border-gray-100 dark:border-white/10 flex items-center gap-4 hover:border-primary/40 transition-colors group opacity-80">
-                        <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-                            <span className="material-symbols-outlined text-3xl">medical_services</span>
+
+                    <div className="bg-white dark:bg-dark-surface p-5 rounded-2xl border border-gray-100 dark:border-white/10 flex items-center gap-5 hover:border-primary/40 transition-all shadow-sm group">
+                        <div className="w-14 h-14 bg-gray-50 dark:bg-white/5 rounded-2xl flex items-center justify-center text-gray-400 group-hover:bg-primary/20 group-hover:text-primary transition-colors duration-300">
+                            <span className="material-symbols-outlined text-3xl">medication</span>
                         </div>
                         <div className="flex-1">
-                            <h4 className="font-bold text-base">Cápsula Noturna THC:CBD</h4>
-                            <p className="text-sm text-gray-500">Oral • 1 cápsula • Antes de dormir</p>
+                            <h4 className="font-bold text-base leading-tight">Gummies CBD Relax Night</h4>
+                            <p className="text-sm text-gray-500 font-medium">Mastigável • 1 un • Hoje, 22:30</p>
                         </div>
-                        <div className="text-right flex flex-col items-end gap-2">
-                            <span className="px-2 py-1 bg-gray-100 dark:bg-white/10 text-gray-500 text-[10px] font-bold uppercase rounded">Aguardando</span>
-                            <button className="bg-gray-100 dark:bg-white/5 p-2 rounded-lg text-gray-400">
-                                <span className="material-symbols-outlined">check_circle</span>
-                            </button>
+                        <button className="bg-gray-100 dark:bg-white/5 text-gray-400 p-2.5 rounded-xl">
+                            <span className="material-symbols-outlined text-lg">schedule</span>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Quick Shortcuts */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <button onClick={() => setActivePage('reports')} className="p-4 bg-white dark:bg-dark-surface rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm hover:shadow-md transition-all flex flex-col items-center gap-2 group">
+                        <div className="size-10 bg-primary/5 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                            <span className="material-symbols-outlined">edit_square</span>
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-primary">Registrar</span>
+                    </button>
+                    <button onClick={() => setActivePage('documents')} className="p-4 bg-white dark:bg-dark-surface rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm hover:shadow-md transition-all flex flex-col items-center gap-2 group">
+                        <div className="size-10 bg-blue-500/5 rounded-xl flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                            <span className="material-symbols-outlined">folder</span>
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-blue-500">Arquivos</span>
+                    </button>
+                    <button onClick={() => setActivePage('appointments')} className="p-4 bg-white dark:bg-dark-surface rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm hover:shadow-md transition-all flex flex-col items-center gap-2 group">
+                        <div className="size-10 bg-amber-500/5 rounded-xl flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-all">
+                            <span className="material-symbols-outlined">event</span>
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-amber-500">Agenda</span>
+                    </button>
+                    <button onClick={() => setActivePage('pharmacy')} className="p-4 bg-[#112116] rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col items-center gap-2 group">
+                        <div className="size-10 bg-primary/20 rounded-xl flex items-center justify-center text-primary">
+                            <span className="material-symbols-outlined">storefront</span>
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">Comprar</span>
+                    </button>
+                </div>
+
+                {/* Treatment Insights & Metrics */}
+                <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-lg font-black tracking-tight">Insights do Tratamento</h3>
+                        <button onClick={() => setActivePage('reports')} className="text-xs font-black text-primary uppercase hover:underline">Ver Todos</button>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div className="p-4 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-100 dark:border-green-900/20">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="material-symbols-outlined text-green-600 text-lg">bedtime</span>
+                                <span className="text-[10px] font-black text-gray-500 uppercase">Sono</span>
+                            </div>
+                            <p className="text-2xl font-black text-green-600">+32%</p>
+                            <p className="text-[10px] text-gray-500 font-medium">Melhora</p>
+                        </div>
+                        <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-900/20">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="material-symbols-outlined text-blue-600 text-lg">mood</span>
+                                <span className="text-[10px] font-black text-gray-500 uppercase">Humor</span>
+                            </div>
+                            <p className="text-2xl font-black text-blue-600">+28%</p>
+                            <p className="text-[10px] text-gray-500 font-medium">Melhora</p>
+                        </div>
+                        <div className="p-4 bg-purple-50 dark:bg-purple-900/10 rounded-xl border border-purple-100 dark:border-purple-900/20">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="material-symbols-outlined text-purple-600 text-lg">self_improvement</span>
+                                <span className="text-[10px] font-black text-gray-500 uppercase">Ansiedade</span>
+                            </div>
+                            <p className="text-2xl font-black text-purple-600">-45%</p>
+                            <p className="text-[10px] text-gray-500 font-medium">Redução</p>
+                        </div>
+                        <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/20">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="material-symbols-outlined text-amber-600 text-lg">favorite</span>
+                                <span className="text-[10px] font-black text-gray-500 uppercase">Dor</span>
+                            </div>
+                            <p className="text-2xl font-black text-amber-600">-38%</p>
+                            <p className="text-[10px] text-gray-500 font-medium">Redução</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Upcoming Deliveries & Activity Timeline */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Upcoming Deliveries */}
+                    <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-3">
+                                <div className="size-10 bg-blue-50 dark:bg-blue-900/10 rounded-xl flex items-center justify-center text-blue-500">
+                                    <span className="material-symbols-outlined">local_shipping</span>
+                                </div>
+                                <h3 className="text-lg font-black tracking-tight">Próximas Entregas</h3>
+                            </div>
+                            <button onClick={() => setActivePage('orders')} className="text-xs font-black text-primary uppercase hover:underline">Ver Pedidos</button>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/10">
+                                <div className="size-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary flex-shrink-0">
+                                    <span className="material-symbols-outlined">package_2</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-bold text-sm truncate">Óleo CBD Full Spectrum 10%</p>
+                                    <p className="text-xs text-gray-500 font-medium">Pedido #4521 • Chega em 2 dias</p>
+                                </div>
+                                <div className="flex-shrink-0">
+                                    <span className="px-2 py-1 bg-green-100 dark:bg-green-900/20 text-green-600 text-[10px] font-black rounded-full uppercase">Em Trânsito</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/10">
+                                <div className="size-12 bg-amber-50 dark:bg-amber-900/10 rounded-xl flex items-center justify-center text-amber-500 flex-shrink-0">
+                                    <span className="material-symbols-outlined">inventory_2</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-bold text-sm truncate">Gummies CBD Relax Night</p>
+                                    <p className="text-xs text-gray-500 font-medium">Pedido #4498 • Chega em 5 dias</p>
+                                </div>
+                                <div className="flex-shrink-0">
+                                    <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-600 text-[10px] font-black rounded-full uppercase">Processando</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Recent Activity Timeline */}
+                    <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-3">
+                                <div className="size-10 bg-purple-50 dark:bg-purple-900/10 rounded-xl flex items-center justify-center text-purple-500">
+                                    <span className="material-symbols-outlined">history</span>
+                                </div>
+                                <h3 className="text-lg font-black tracking-tight">Atividade Recente</h3>
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="flex gap-4">
+                                <div className="flex flex-col items-center">
+                                    <div className="size-8 bg-primary/10 rounded-full flex items-center justify-center text-primary flex-shrink-0">
+                                        <span className="material-symbols-outlined text-sm">check</span>
+                                    </div>
+                                    <div className="w-0.5 h-full bg-gray-200 dark:bg-white/10 mt-2"></div>
+                                </div>
+                                <div className="flex-1 pb-4">
+                                    <p className="font-bold text-sm">Relato Registrado</p>
+                                    <p className="text-xs text-gray-500 font-medium">Ontem às 20:30 • Melhora no sono</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="flex flex-col items-center">
+                                    <div className="size-8 bg-blue-50 dark:bg-blue-900/10 rounded-full flex items-center justify-center text-blue-500 flex-shrink-0">
+                                        <span className="material-symbols-outlined text-sm">medication</span>
+                                    </div>
+                                    <div className="w-0.5 h-full bg-gray-200 dark:bg-white/10 mt-2"></div>
+                                </div>
+                                <div className="flex-1 pb-4">
+                                    <p className="font-bold text-sm">Medicação Tomada</p>
+                                    <p className="text-xs text-gray-500 font-medium">Hoje às 08:00 • Óleo CBD 3 gotas</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="flex flex-col items-center">
+                                    <div className="size-8 bg-amber-50 dark:bg-amber-900/10 rounded-full flex items-center justify-center text-amber-500 flex-shrink-0">
+                                        <span className="material-symbols-outlined text-sm">calendar_today</span>
+                                    </div>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-bold text-sm">Consulta Agendada</p>
+                                    <p className="text-xs text-gray-500 font-medium">Há 2 dias • Dra. Letícia Oliveira</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Human Support Sidebar */}
-            <div className="space-y-4">
-                <h3 className="text-xl font-bold px-1">Suporte Humano</h3>
-                <div className="bg-white dark:bg-[#1a2e20] p-6 rounded-xl border border-gray-100 dark:border-white/10 shadow-sm space-y-6">
+            {/* Concierge, Tips & Reports Hub Column */}
+            <div className="space-y-8">
+                {/* Reports Summary Card (from User Image) */}
+                <div className="bg-primary p-7 rounded-2xl shadow-xl shadow-primary/20 flex flex-col justify-between items-start relative overflow-hidden group">
+                    <div className="absolute right-0 top-0 size-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:scale-125 transition-all duration-700" />
+                    <div className="relative z-10 w-full space-y-5">
+                        <div className="flex items-center gap-3">
+                            <div className="size-10 bg-white/20 rounded-xl flex items-center justify-center text-white">
+                                <span className="material-symbols-outlined">edit_square</span>
+                            </div>
+                            <h4 className="text-white font-black text-lg">Relatos do Tratamento</h4>
+                        </div>
+                        <p className="text-white/90 text-sm font-medium leading-relaxed">
+                            Último relato: <span className="font-black">Ontem, 20:30</span><br />
+                            Status: <span className="font-black italic">Melhora no Sono</span>
+                        </p>
+                        <button
+                            onClick={() => setActivePage('reports')}
+                            className="w-full bg-white text-primary font-black py-4 rounded-xl text-sm shadow-lg hover:translate-y-[-2px] transition-all flex items-center justify-center gap-2"
+                        >
+                            Registrar Agora
+                            <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Concierge Card */}
+                <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm space-y-5 group cursor-pointer hover:border-primary/30 transition-all">
                     <div className="flex items-center gap-4">
-                        <div className="relative">
-                            <div className="w-14 h-14 rounded-full bg-cover bg-center border-2 border-primary" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuD80dArObbYpuXgVgJ8NNJ7sYtznk2tjUDomJsAvfvtiM4vNnQMVbEkd0bYqCrSGFsH_JTgANLQO7YIw0Nfh_1MsGQtU8iZtBt5fNeOs5uvVGr3TK8QEGwzl9dUeK4RW_0_A287HMttjG1ZNMh7ts4qohYVfZTD0qjTdnVa9QWGSXQJDPnFC3uFlI3K1eO3b4T-gqUZ3FNvutAjaDM5W90uNEa-grRuYGvoguFLn07zYHQh9c_tS8ADOvNbNT2ky4AFaSgoMbrmnTg')" }}></div>
-                            <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                        <div className="size-14 rounded-2xl bg-primary/10 p-0.5 border border-primary/20 overflow-hidden">
+                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD80dArObbYpuXgVgJ8NNJ7sYtznk2tjUDomJsAvfvtiM4vNnQMVbEkd0bYqCrSGFsH_JTgANLQO7YIw0Nfh_1MsGQtU8iZtBt5fNeOs5uvVGr3TK8QEGwzl9dUeK4RW_0_A287HMttjG1ZNMh7ts4qohYVfZTD0qjTdnVa9QWGSXQJDPnFC3uFlI3K1eO3b4T-gqUZ3FNvutAjaDM5W90uNEa-grRuYGvoguFLn07zYHQh9c_tS8ADOvNbNT2ky4AFaSgoMbrmnTg" className="w-full h-full object-cover rounded-xl" />
                         </div>
                         <div>
-                            <p className="font-bold">Dra. Letícia</p>
-                            <p className="text-xs text-[#4e9767]">Sua Concierge de Saúde</p>
+                            <p className="font-black leading-tight">Dra. Letícia</p>
+                            <p className="text-primary text-[10px] font-black uppercase tracking-widest">Sua Concierge</p>
                         </div>
                     </div>
-                    <p className="text-sm text-gray-500 leading-relaxed">
-                        Olá João! Estou aqui para tirar suas dúvidas sobre a medicação ou efeitos colaterais. Como posso ajudar?
+                    <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                        "Olá João! Verifiquei que seu estoque de óleo está quase no fim. Deseja renovar seu pedido?"
                     </p>
-                    <div className="grid gap-2">
-                        <button className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-[#25D366] text-white font-bold text-sm hover:opacity-90 transition-opacity">
-                            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
-                            WhatsApp
-                        </button>
-                        <button className="w-full flex items-center justify-center gap-2 py-3 rounded-lg border border-gray-200 dark:border-white/10 font-bold text-sm hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                            <span className="material-symbols-outlined text-sm">chat_bubble</span>
-                            Abrir Chat Online
+                    <button className="text-xs font-black text-primary uppercase hover:underline">Falar no Concierge</button>
+                </div>
+
+                <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm group cursor-pointer hover:border-primary/30 transition-all">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="size-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-500 dark:bg-amber-500/10">
+                            <span className="material-symbols-outlined text-xl">lightbulb</span>
+                        </div>
+                        <h4 className="font-bold text-sm">Dica de Bem-estar</h4>
+                    </div>
+                    <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                        A constância é fundamental. Tente administrar o CBD no mesmo horário todos os dias.
+                    </p>
+                </div>
+
+                {/* Prescription Renewal Reminder Card */}
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 p-6 rounded-2xl border border-green-100 dark:border-green-900/20 shadow-sm relative overflow-hidden group">
+                    <div className="absolute -right-8 -bottom-8 size-32 bg-green-200/30 dark:bg-primary/10 rounded-full blur-2xl group-hover:scale-125 transition-all duration-500" />
+                    <div className="relative z-10 space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="size-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                                <span className="material-symbols-outlined text-2xl">event_upcoming</span>
+                            </div>
+                            <div>
+                                <h4 className="font-black text-sm">Próxima Renovação</h4>
+                                <p className="text-[10px] font-bold text-primary uppercase tracking-wider">Receita Médica</p>
+                            </div>
+                        </div>
+                        <div className="p-4 bg-white/60 dark:bg-white/5 rounded-xl border border-green-200/50 dark:border-green-800/30">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">Vencimento</span>
+                                <span className="text-xs font-black text-primary">45 dias</span>
+                            </div>
+                            <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden">
+                                <div className="bg-gradient-to-r from-primary to-emerald-500 h-full rounded-full w-[65%] shadow-lg shadow-primary/30"></div>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setActivePage('appointments')}
+                            className="w-full bg-primary hover:bg-primary-dark text-[#0e1b12] font-bold py-3 rounded-xl text-xs shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2 group/btn"
+                        >
+                            <span>Agendar Renovação</span>
+                            <span className="material-symbols-outlined text-sm transition-transform group-hover/btn:translate-x-1">arrow_forward</span>
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        {/* Appointments and Sentiment */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-            <div className="space-y-4">
-                <h3 className="text-xl font-bold px-1">Seu Histórico Recente</h3>
-                <div className="bg-white dark:bg-[#1a2e20] rounded-xl border border-gray-100 dark:border-white/10 overflow-hidden overflow-x-auto scrollbar-hide">
-                    <table className="w-full text-left text-sm min-w-[300px]">
-                        <thead>
-                            <tr className="bg-gray-50 dark:bg-white/5">
-                                <th className="px-6 py-3 font-bold">Data</th>
-                                <th className="px-6 py-3 font-bold">Ação</th>
-                                <th className="px-6 py-3 font-bold text-right">Humor</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-                            <tr>
-                                <td className="px-6 py-4">Hoje, 08:30</td>
-                                <td className="px-6 py-4">Dose Registrada</td>
-                                <td className="px-6 py-4 text-right">😊</td>
-                            </tr>
-                            <tr>
-                                <td className="px-6 py-4">Ontem, 20:15</td>
-                                <td className="px-6 py-4">Relato Completo</td>
-                                <td className="px-6 py-4 text-right">🙂</td>
-                            </tr>
-                            <tr>
-                                <td className="px-6 py-4">Ontem, 08:45</td>
-                                <td className="px-6 py-4">Dose Registrada</td>
-                                <td className="px-6 py-4 text-right">😐</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            {/* Informational Card */}
-            <div className="bg-primary/10 rounded-xl p-6 border border-primary/20 flex flex-col justify-center gap-3">
-                <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-primary">
-                    <span className="material-symbols-outlined">lightbulb</span>
-                </div>
-                <h4 className="font-bold text-lg">Dica do dia</h4>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                    A constância é a chave para o sucesso do tratamento com CBD. Tente administrar sua medicação sempre no mesmo horário para manter os níveis estáveis em seu organismo.
-                </p>
             </div>
         </div>
 
         {/* Footer */}
-        <footer className="max-w-6xl mx-auto py-10 border-t border-gray-100 dark:border-white/10 text-center text-xs text-gray-500">
-            <p>© 2023 Rootcare Integrated Health. Todos os direitos reservados.</p>
-            <div className="flex justify-center gap-4 mt-2">
-                <a className="hover:text-primary" href="#">Termos de Uso</a>
-                <a className="hover:text-primary" href="#">Privacidade</a>
-            </div>
+        <footer className="py-10 border-t border-gray-100 dark:border-white/5 text-center px-4">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-loose">
+                © 2024 Rootcare Integrated Health Systems.<br />
+                Inteligência Médica & Cuidado Humanizado.
+            </p>
         </footer>
     </div>
 );
@@ -900,12 +1110,18 @@ const DocumentsPage = ({ activeSubPage = 'documents' }: { activeSubPage?: 'docum
             <header className="flex flex-wrap justify-between items-start gap-4">
                 <div className="space-y-1">
                     <h2 className="text-3xl font-black tracking-tight dark:text-white">
-                        {activeSubPage === 'anvisa' ? 'Autorização ANVISA' : 'Documentação'}
+                        {activeSubPage === 'anvisa' ? 'Autorização ANVISA' : 'Meus Arquivos Médicos'}
                     </h2>
                     <p className="text-[#4e9767] text-base">
-                        {activeSubPage === 'anvisa' ? 'Gerencie suas autorizações especiais para importação.' : 'Acesse seus laudos, receitas e documentos oficiais.'}
+                        {activeSubPage === 'anvisa' ? 'Gerencie suas autorizações especiais para importação.' : 'Gerencie todos os seus documentos, laudos e receitas em um só lugar.'}
                     </p>
                 </div>
+                {activeSubPage === 'documents' && (
+                    <button className="bg-primary hover:bg-primary-dark text-[#0e1b12] font-black py-3 px-6 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+                        <span className="material-symbols-outlined">upload_file</span>
+                        <span>Adicionar Documento</span>
+                    </button>
+                )}
             </header>
 
             {activeSubPage === 'anvisa' ? (
@@ -932,29 +1148,127 @@ const DocumentsPage = ({ activeSubPage = 'documents' }: { activeSubPage?: 'docum
                     </button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[
-                        { title: 'Laudo Médico Atualizado', date: '15 Out, 2023', icon: 'description', color: 'text-blue-500' },
-                        { title: 'Receituário Digital B', date: '02 Set, 2023', icon: 'medication', color: 'text-primary' },
-                        { title: 'Termo de Consentimento', date: '20 Jan, 2023', icon: 'assignment', color: 'text-amber-500' },
-                    ].map((doc, i) => (
-                        <div key={i} className="bg-white dark:bg-[#1a2e20] p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm hover:border-primary/30 transition-all cursor-pointer group">
-                            <div className={`p-3 rounded-xl bg-gray-50 dark:bg-white/5 w-fit mb-4 ${doc.color}`}>
-                                <span className="material-symbols-outlined">{doc.icon}</span>
-                            </div>
-                            <h4 className="font-bold mb-1 group-hover:text-primary transition-colors">{doc.title}</h4>
-                            <p className="text-xs text-gray-500">Emitido em {doc.date}</p>
-                            <div className="mt-6 flex justify-between items-center">
-                                <span className="text-[10px] font-black text-gray-400 uppercase">PDF • 1.2 MB</span>
-                                <span className="material-symbols-outlined text-gray-400 group-hover:text-primary">download</span>
+                <>
+                    {/* Statistics Section */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="bg-white dark:bg-[#1a2e20] p-5 rounded-xl border border-gray-100 dark:border-white/10 shadow-sm">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="size-10 bg-blue-50 dark:bg-blue-900/10 rounded-lg flex items-center justify-center text-blue-500">
+                                    <span className="material-symbols-outlined text-xl">folder</span>
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-black text-blue-500">12</p>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase">Total</p>
+                                </div>
                             </div>
                         </div>
-                    ))}
-                    <div className="border-2 border-dashed border-gray-200 dark:border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-3 hover:border-primary/50 transition-colors cursor-pointer group">
-                        <span className="material-symbols-outlined text-4xl text-gray-300 group-hover:text-primary transition-colors">add_circle</span>
-                        <p className="text-sm font-bold">Adicionar Documento</p>
+                        <div className="bg-white dark:bg-[#1a2e20] p-5 rounded-xl border border-gray-100 dark:border-white/10 shadow-sm">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="size-10 bg-green-50 dark:bg-green-900/10 rounded-lg flex items-center justify-center text-green-500">
+                                    <span className="material-symbols-outlined text-xl">description</span>
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-black text-green-500">5</p>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase">Laudos</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-white dark:bg-[#1a2e20] p-5 rounded-xl border border-gray-100 dark:border-white/10 shadow-sm">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="size-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                                    <span className="material-symbols-outlined text-xl">medication</span>
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-black text-primary">4</p>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase">Receitas</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-white dark:bg-[#1a2e20] p-5 rounded-xl border border-gray-100 dark:border-white/10 shadow-sm">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="size-10 bg-amber-50 dark:bg-amber-900/10 rounded-lg flex items-center justify-center text-amber-500">
+                                    <span className="material-symbols-outlined text-xl">assignment</span>
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-black text-amber-500">3</p>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase">Termos</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                    {/* Documents Grid */}
+                    <div>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-black">Documentos Recentes</h3>
+                            <button className="text-xs font-black text-primary uppercase hover:underline">Ver Todos</button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {[
+                                { title: 'Laudo Médico Atualizado', date: '15 Out, 2023', icon: 'description', color: 'text-blue-500', size: '1.2 MB' },
+                                { title: 'Receituário Digital B', date: '02 Set, 2023', icon: 'medication', color: 'text-primary', size: '1.2 MB' },
+                                { title: 'Termo de Consentimento', date: '20 Jan, 2023', icon: 'assignment', color: 'text-amber-500', size: '1.2 MB' },
+                                { title: 'Exame de Sangue Completo', date: '28 Ago, 2023', icon: 'biotech', color: 'text-purple-500', size: '2.4 MB' },
+                                { title: 'Prescrição Médica Inicial', date: '10 Jul, 2023', icon: 'prescription', color: 'text-green-500', size: '980 KB' },
+                                { title: 'Autorização de Tratamento', date: '05 Jun, 2023', icon: 'verified', color: 'text-indigo-500', size: '1.5 MB' },
+                            ].map((doc, i) => (
+                                <div key={i} className="bg-white dark:bg-[#1a2e20] p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm hover:border-primary/30 transition-all cursor-pointer group">
+                                    <div className={`p-3 rounded-xl bg-gray-50 dark:bg-white/5 w-fit mb-4 ${doc.color}`}>
+                                        <span className="material-symbols-outlined">{doc.icon}</span>
+                                    </div>
+                                    <h4 className="font-bold mb-1 group-hover:text-primary transition-colors">{doc.title}</h4>
+                                    <p className="text-xs text-gray-500">Emitido em {doc.date}</p>
+                                    <div className="mt-6 flex justify-between items-center">
+                                        <span className="text-[10px] font-black text-gray-400 uppercase">PDF • {doc.size}</span>
+                                        <span className="material-symbols-outlined text-gray-400 group-hover:text-primary">download</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Recent Activity Timeline */}
+                    <div className="bg-white dark:bg-[#1a2e20] p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm">
+                        <h3 className="text-lg font-black mb-6">Atividade Recente</h3>
+                        <div className="space-y-4">
+                            <div className="flex gap-4">
+                                <div className="flex flex-col items-center">
+                                    <div className="size-8 bg-blue-50 dark:bg-blue-900/10 rounded-full flex items-center justify-center text-blue-500 flex-shrink-0">
+                                        <span className="material-symbols-outlined text-sm">upload</span>
+                                    </div>
+                                    <div className="w-0.5 h-full bg-gray-200 dark:bg-white/10 mt-2"></div>
+                                </div>
+                                <div className="flex-1 pb-4">
+                                    <p className="font-bold text-sm">Laudo Médico Enviado</p>
+                                    <p className="text-xs text-gray-500 font-medium">Há 2 dias • Dr. Carlos Mendes</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="flex flex-col items-center">
+                                    <div className="size-8 bg-primary/10 rounded-full flex items-center justify-center text-primary flex-shrink-0">
+                                        <span className="material-symbols-outlined text-sm">check_circle</span>
+                                    </div>
+                                    <div className="w-0.5 h-full bg-gray-200 dark:bg-white/10 mt-2"></div>
+                                </div>
+                                <div className="flex-1 pb-4">
+                                    <p className="font-bold text-sm">Receita Aprovada</p>
+                                    <p className="text-xs text-gray-500 font-medium">Há 5 dias • Sistema Rootcare</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="flex flex-col items-center">
+                                    <div className="size-8 bg-amber-50 dark:bg-amber-900/10 rounded-full flex items-center justify-center text-amber-500 flex-shrink-0">
+                                        <span className="material-symbols-outlined text-sm">download</span>
+                                    </div>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-bold text-sm">Termo Baixado</p>
+                                    <p className="text-xs text-gray-500 font-medium">Há 1 semana • Você</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </>
             )}
         </div>
     );
@@ -966,12 +1280,12 @@ const PharmacyPage = ({ onProductSelect, onAddToCart, onCartClick, cart, cartSub
     const categories = ['Óleos Full Spectrum', 'Isolados', 'Cápsulas', 'Tópicos & Cremes', 'Flores In Natura'];
 
     const products = [
-        { name: 'Cannabiol Full Spectrum 3000mg', category: 'Óleos Full Spectrum', price: 'R$ 389,00', oldPrice: 'R$ 499,00', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAi9htBPss4vilfjcERPKtcMaOI55WHC_aRubs6j_KlertiYgWAWCKfLcT_sbPvsocpCCqle4XnRvx_dlEaY1cpE749ndq1CqVj8PXkd6mDgYMPtUuLHDUsEL20hZvCQNpYC4DGnLIsPLsu0GxxFKzEVqK9_MfnJz710Q9QbNNe2TkDIgYQ3nNDIoWsnNFQlXz2gLrlmec23gvghXbUTLfCfftSl_wE07NIPWcHKZeyCsPtdrpDMCYAIyhXg3UtJV3LqyZQYW5B4ks', badge: 'MAIS VENDIDO' },
-        { name: 'Cápsulas Softgel CBD 25mg', category: 'Cápsulas', price: 'R$ 215,00', oldPrice: 'R$ 280,00', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAfWMhqBbYiGO4WNvAO7BvZE_6VtEm4VvhDVwFcHXMqt6gM8TpwHgZX346lOXtzlPrRIXcaU1cyKL9B84dOi0ghYIvIh5k8RKmcSsE9WnMV1yZ158NabVs762s3fkSthHAMQ6lxNnI6-W0xXgYs4YhW5kuXsVHi4UJGA3vJQuAAq_ZdZTdjvg-PquBFTiObyEgQobQjCxxgjFT19bSoxMRlU0dkcGsGgUntHNiq7zzKXq_HPn_vknOHFBPUmDcz-4azdMoRKKpP-1k' },
-        { name: 'Flower Premium CBD Lemon 5g', category: 'Flores In Natura', price: 'R$ 520,00', oldPrice: 'R$ 650,00', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCghNdxUiPq15xgSlIlb3jV4a72QQfmLPbzo0RW804vq7LnilFEcgn7V_0fe0RtoOtOzLaaiDVWw14PVEjR9DuM08k40EzwUF1HY_x9XLqVQfaJw4sOAJ4ZoWa5R8EiH6YgnaznBaz_1QUmJ5Wg8-oTKCTfZnIS_qS1Td3uSqG0rw4KQSpJhD0-ExbuSP1rdYI3x2MRjgdQ2Zo8X9Nu3UrLlBStRR1dSJrH_HADme-IImPiRzR0p27ETQsZg_cztK68o8ec5gqPzzk', badge: 'ESTOQUE BAIXO' },
-        { name: 'Bálsamo Aliviador CBD', category: 'Tópicos & Cremes', price: 'R$ 145,00', oldPrice: 'R$ 180,00', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAZHBxg6YrAUZVDo7R0vF-GmeRQvyTjZDZcuKj4mkFtYP7IcpoBK-YYjcsWUMx7SCy16iebZGAOIooLdxdJ4lSMyUdpWI3sNKlpCfteKyvTKtexTBveoErzS1Ei7AroHd5ab69-mkO7DTySeL-ZcAnAfmJAIFM4qqwLvooHDGaA-ypAfjcZXXf3uOchFdBcSBDZrsT6yIxo9Z-YH4qKd-3fUmFl2oAU--uMIcgFqEoY8EpANxEcg5lwQkldKy4LNc-3AiX_5SjC_9w' },
-        { name: 'Pó Cristal CBD Isolado 99%', category: 'Isolados', price: 'R$ 290,00', oldPrice: 'R$ 350,00', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBhUk1X361P89s0fCC3_NiIk-iNN6McMZKZkRTiEjkt1o5BwxrpBfOd73UoG-iFqE4w4AZeCIMIWbA236eHvmp8lFp4Xjh496NqrzGCTJSsrGns0sQaZ3idGE4m_uJum6SMHuDzDpKBSrmwfebJ_g_gzt730l9sk9bdAvnA6gVU_rhNbBKWhCxVUnSY8qR4UTVPXiG5Ngjv3QQnAboRdlOBLq8vY1EMrOSl5fCN5HAEBHZ46lFw8Z7DzJZaJz1KcIMVKYRGR1MppUs' },
-        { name: 'Óleo THC:CBD Balanceado', category: 'Óleos Full Spectrum', price: 'R$ 345,00', oldPrice: 'R$ 420,00', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuChX11uG6DihfAWhcRcCrxeX632JF6zB6nNgawW4sZabi0azImr7urtvwehr2IqY3j0tIRnFwEO4_l4DLh4cCTP7oeUmgf1NN0h4a17ZSkVWeJ1mmH4-jHo_9V2ops4nbPxDWrS3JRm2NCpqjyOyJ8CDaTlzJ0q_o-nyYKKEedPihxNtx9ceAkfCCUve4NmMbgExf_lqCiWC55gKpZO_OravlhOIjvvNe8rZoQNalPL4Tj-p-rtTtRkRqt7QzFzOQXz_cmTViFf_gk' },
+        { name: 'Cannabiol Full Spectrum 3000mg', category: 'Óleos Full Spectrum', price: 'R$ 389,00', oldPrice: 'R$ 499,00', image: 'https://content.app-sources.com/s/9912119225007784/uploads/Images/rootcare_3000_1-9614660.png', badge: 'MAIS VENDIDO' },
+        { name: 'Cápsulas Softgel CBD 25mg', category: 'Cápsulas', price: 'R$ 215,00', oldPrice: 'R$ 280,00', image: 'https://content.app-sources.com/s/9912119225007784/uploads/Images/rootcare_3000_1-9614660.png' },
+        { name: 'Flower Premium CBD Lemon 5g', category: 'Flores In Natura', price: 'R$ 520,00', oldPrice: 'R$ 650,00', image: 'https://content.app-sources.com/s/9912119225007784/uploads/Images/rootcare_3000_1-9614660.png', badge: 'ESTOQUE BAIXO' },
+        { name: 'Bálsamo Aliviador CBD', category: 'Tópicos & Cremes', price: 'R$ 145,00', oldPrice: 'R$ 180,00', image: 'https://content.app-sources.com/s/9912119225007784/uploads/Images/rootcare_3000_1-9614660.png' },
+        { name: 'Pó Cristal CBD Isolado 99%', category: 'Isolados', price: 'R$ 290,00', oldPrice: 'R$ 350,00', image: 'https://content.app-sources.com/s/9912119225007784/uploads/Images/rootcare_3000_1-9614660.png' },
+        { name: 'Óleo THC:CBD Balanceado', category: 'Óleos Full Spectrum', price: 'R$ 345,00', oldPrice: 'R$ 420,00', image: 'https://content.app-sources.com/s/9912119225007784/uploads/Images/rootcare_3000_1-9614660.png' },
     ];
 
     return (
@@ -1045,9 +1359,9 @@ const ProfessionalsPage = () => {
 
     const professionals = [
         { name: 'Dra. Juliana Mendes', specialty: 'Endocrinologista • Bem-estar', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCExtjjw05OSdlgk1RmlbEGQEhachUP5QgvWj9hvTAKFm62cMm64pHClLdnUxL6dST0ttEehugx0B0y6an8uEjelsSKfMeq9WCFSwr0Hqj44V98IcstsPTaeF0z-gmEVzmWErZSlsO64Lv9zkkvL_pJK1RSxBhgMr87hqprzutmEkWfD-_XvzSYmZW-8h1Tmzk5m-3J0RtiKvY3WkjaqOYvTWNf-q5n0kB-jfkM6SulaIXrWNTYPFb90gpHfyOh40EC_wHRSWct-5Y' },
-        { name: 'Dr. Ricardo Almada', specialty: 'Geriatra • Parkinson & Alzheimer', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB5ms2Qu3s6XElYyzP0xh_f-3-7mDFut26yd-_-m1BjTpRRHO1cBwR7w4XQ5l9T_fDoE8NXFUoxwLsuBkri3LgsdheTVlCBV03EqgqAICMmELy_U_UjqDj9QQWk7_nM85aSN766z6GYThLb_wMB2lHqwEb1yfA7gxLX6PxULsWr1EzMCvzkqjHiBYG3kqnAW-6sfQ6rgtT6-0tjmYQIoSohoM7yOe2LepVbTDl_uouM7I1Jwkb9wCGzhh-ZSyDUypXZdT8FjyLknPU' },
+        { name: 'Dr. Ricardo Almada', specialty: 'Geriatra • Parkinson & Alzheimer', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB5ms2Qu3s6XElYyzP0xh_f-3-7mDFut26yd-_-m1BjTpRRHO1cBwR7w4XQ5l9T_fDoE8NXFUoxbLsuBkri3LgsdheTVlCBV03EqgqAICMmELy_U_UjqDj9QQWk7_nM85aSN766z6GYThLb_wMB2lHqwEb1yfA7gxLX6PxULsWr1EzMCvzkqjHiBYG3kqnAW-6sfQ6rgtT6-0tjmYQIoSohoM7yOe2LepVbTDl_uouM7I1Jwkb9wCGzhh-ZSyDUypXZdT8FjyLknPU' },
         { name: 'Dra. Beatriz Costa', specialty: 'Dermatologista • Psoríase', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD8wqnWxCBMqYzpDCrbpQOsDWHo8qad0s0XQ-ZlbBvziOlkOaxzlgLB0jrB-H38CBM0_ni6l0HsO0LoafQWCX3URtUUZxGSuRLybgjX-9nhaA1hknHuSWufrdJluAfMqObuURLpAZ6tiSQRsU6l96Ro1H_FuTpUghI7CNwo-8YmwDeJdrY9WOAX-RnMfaDl9btO4r4DiYPn7nIjFYpWKmORpaHM31gA0h-wVOJ-Tva3r11FndioAYw7XiUoB5XU4bwBzZ8EbY3aW7o' },
-        { name: 'Dr. Paulo Rossi', specialty: 'Infectologista • Terapias Canábicas', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDDRYkd4VY7lR_UfjM3uWHJLAhPEOengIWJyALJF_H4PVn0zs-dDQTiTFZIwgZuUT7me2TZ7qZx5Fv5E15Otg8nOIR2NDaDetJ_Jc9RR7mq6Q47nu4xAluR4Z_1p8eY8bfwch-1gQBLUCc4wPyqm4cb3b_RK-8BJjJT8g-4ODAdlUmjUgdXi5F0H31oXDdWBYK_rXXsfRQGEYEqC_FSkcKnA34HNPdF1cGCsoMBKZhVXBYo-xyaNziwMjVTD8677bjq6RyFPPuUxvo' },
+        { name: 'Dr. Paulo Rossi', specialty: 'Infectologista • Terapias Canábicas', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDDRYkd4VY7lR_UfjM3uWHJLAhPEOengIWJyALJF_H4PVn0zs-dDQTiTFZIwgZuUT7me2TZ7qZx5Fv5E15Otg8nOIR2NDaDetJ_Jc9RR7mq6Q47nu4xAluR4Z_1p8eY8bfwch-1gQBLUCc4wPyqm4cb3b_RK-8BJjJT8g-4ODAdlUmjUgdXi5F0H31oXDdWBYK_rXXsfRQGEYEqC_FSkcKnA34HNPdF1cGCsoMBKZhVXBYo-xyaNziwMjVTD8677bjq6RyFPPnPU' },
     ];
 
     return (
@@ -1172,7 +1486,7 @@ const AppointmentsPage = () => (
                             <span className="material-symbols-outlined text-gray-300 group-hover:text-primary transition-colors">chevron_right</span>
                         </div>
                         <div className="bg-white dark:bg-[#1a2e20] p-4 rounded-xl border border-gray-100 dark:border-white/10 flex items-center gap-4 hover:border-primary/40 transition-colors group cursor-pointer">
-                            <div className="w-12 h-12 rounded-lg bg-cover bg-center bg-gray-100" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCu5uFFzFQ9gu487H4VYjlgrjb23oktCIg8IB1ovGXJiOUVHW35oWP_54imRyhHVxofd97r1vNKTYcxssuU4FI9n8xXPPa_6E4meW_Lw9whqR_QAmRxYiHRESmLE_t1JJr5W3G8aXolc5i3Ya6yFp2QqPIozZ4zc1O3FEjZj1P9L2sinY_CbTNwu38fid4Zxo4MA8KRlDUXLYlaT85fXS76m6hNWG0FiKr1dSQVhoU2kfqt7qoE7MYOB99EO_P__i6FiBUgvEYzWCYAtBO73nYcDIDpjHLzKuE0')" }}></div>
+                            <div className="w-12 h-12 rounded-lg bg-cover bg-center bg-gray-100" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCu5uFFzFQ9gu487H4VYjlgrjb23oktCIg8IB1ovGXJiOUVHW35oWP_54imRyhHVxofd97r1vNKTYcxssuU4FI9n8xXPPa_6E4meW_Lw9whqR_QAmRxYiHRESmLE_t1JJr5W3G8aXolc5i3Ya6yFp2QqPIozZ4zc1O3FEjZj1P9L2sinY_CbTNwu38fid4Zxo4MA8KRlDUXLYlaT85fXS76m6hNWG0FiKr1dSQVhoU2kfqt7qoE7MYOB99EO_P__i6FiBUgvEYzWCYAtBO73nYcDIDpjHLyKuE0')" }}></div>
                             <div className="flex-1">
                                 <h4 className="font-bold text-sm">Dr. Roberto Santos</h4>
                                 <p className="text-xs text-[#4e9767]">Neurologista</p>
@@ -1180,7 +1494,7 @@ const AppointmentsPage = () => (
                             <span className="material-symbols-outlined text-gray-300 group-hover:text-primary transition-colors">chevron_right</span>
                         </div>
                         <div className="bg-white dark:bg-[#1a2e20] p-4 rounded-xl border border-gray-100 dark:border-white/10 flex items-center gap-4 hover:border-primary/40 transition-colors group cursor-pointer">
-                            <div className="w-12 h-12 rounded-lg bg-cover bg-center bg-gray-100" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDH7N1-GMwM8HYy8LjJ-CqcUbryNZ66_gLO43HVtrqUk_wOiRVxrUDsD5G6Ny_tH8PQVoftEEUvF5bJPn7TeAOSqaZ0DoQPXT6ciAiYwbTbu-Xo4DYmewq9SWg9e6Kelol2rD4cEyaPo-ICRTK35cnJ1Z1iuHZbZLe-dRMR_cyDlaBOAGq8xOioPFqqL86eD19xdMNAApN3lE256vqosLYhNbo22dwEkxI29REU_P__i6FiBUgvEYzWCYAtBO73nYcDIDpjHLzKuE0')" }}></div>
+                            <div className="w-12 h-12 rounded-lg bg-cover bg-center bg-gray-100" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDH7N1-GMwM8HYy8LjJ-CqcUbryNZ66_gLO43HVtrqUk_wOiRVxrUDsD5G6Ny_tH8PQVoftEEUvF5bJPn7TeAOSqaZ0DoQPXT6ciAiYwbTbu-Xo4DYmewq9SWg9e6Kelol2rD4cEyaPo-ICRTK35cnJ1Z1iuHZbZLe-dRMR_cyDlaBOAGq8xOioPFqqL86eD19xdMNAApN3lE256vqosLYhNbo22dwEkxI29REU_P__i6FiBUgvEYzWCYAtBO73nYcDIDpjHLyKuE0')" }}></div>
                             <div className="flex-1">
                                 <h4 className="font-bold text-sm">Dra. Ana Paula</h4>
                                 <p className="text-xs text-[#4e9767]">Psiquiatra</p>
@@ -1347,7 +1661,7 @@ const LoginPage = ({ onLogin, onSwitchToRegister, isDarkMode }: { onLogin: () =>
                 <img
                     alt="Doctor"
                     className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-80"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXdPRVe8aviHVjb4qqOYNPzRhQMcB-NjJf4qyx8IIQC2rkYxzL01CII380Sd4yCIAQ3uGEpRhyZHhICpEO77GHqVfDVSyyX79snnhW2_g3DSy1LmTNZ4GR3COLHYe1FtOxxnNHoPuc8eKyERa4sOnNviTTYg9YAIdmQMJ5AO8SM472JqPDouRXF_ao4tLMhnFoeGCaeA_S84wJdYeoJ240IkUaAbOQDER-8CTWHr5dsji5XjrGbGhPuS51HiWNRW_UNA6MjZazTxw"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXdPRVe8aviHVjb4qqOYNPzRhQMcB-NjJf4qyx8IIQC2rkYxzL01CII380Sd4yCIAQ3uGEpRhyZHICpEO77GHqVfDVSyyX79snnhW2_g3DSy1LmTNZ4GR3COLHYe1FtOxxnNHoPuc8eKyERa4sOnNviTTYg9YAIdmQMJ5AO8SM472JqPDouRXF_ao4tLMhnFoeGCaeA_S84wJdYeoJ240IkUaAbOQDER-8CTWHr5dsji5XjrGbGhPuS51HiWNRW_UNA6MjZazTxw"
                 />
                 <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#112116] via-[#112116]/40 to-transparent"></div>
                 <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#112116] via-transparent to-[#112116]/20"></div>
@@ -2046,26 +2360,177 @@ const CheckoutPage = ({ total, onComplete, onBack }: { total: number, onComplete
 };
 
 // --- Page: Success ---
-const SuccessPage = ({ onHome }: { onHome: () => void }) => {
+const SuccessPage = ({ onHome }: { onHome: () => void }) => (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+        <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mb-6 text-primary">
+            <span className="material-symbols-outlined text-5xl">check_circle</span>
+        </div>
+        <h2 className="text-3xl font-black mb-2">Pedido Confirmado!</h2>
+        <p className="text-gray-500 dark:text-gray-400 max-w-md mb-8">
+            Seu pedido foi recebido e já está sendo processado. Você receberá atualizações por e-mail e pode acompanhar o status em "Meus Pedidos".
+        </p>
+        <button
+            onClick={onHome}
+            className="px-8 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/20"
+        >
+            Voltar para o Início
+        </button>
+    </div>
+);
+
+// --- Page: Profile ---
+const ProfilePage = ({ isDarkMode }: { isDarkMode: boolean }) => {
     return (
-        <div className="flex flex-col items-center justify-center py-20 animate-in fade-in zoom-in duration-500 text-center">
-            <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center mb-8 shadow-2xl shadow-primary/40">
-                <span className="material-symbols-outlined text-5xl text-[#0e1b12] font-black">check</span>
+        <div className="space-y-8 pb-12">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div className="flex items-center gap-6">
+                    <div className="relative group">
+                        <div className="w-24 h-24 rounded-3xl bg-cover border-4 border-white dark:border-white/10 shadow-xl overflow-hidden" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDrtKeZhqdggv1wsvLq0DOybOiQ2V61oHjkC7mifSoS1wgPTqxFGcLwD0hU12IWe8h048zjzVk4KBcVXZJfD3HhIQGQE13UGkr9vgHsTHkhzkvedoTfIFr8bGoY3FLcrrND7LIzLXWN0lLbDZNZeDTLuJuyaanCdBCLujd9z48xs3Cq-5YH6vdvImklSwX-P6rcOomkyhB58u-JDr6WudVZOQDNWeOqVQaZ8SjwJ6U5UichLoW_SBmtVg_aWfw2mlD6irLV2JHlYMI')" }}>
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                                <span className="material-symbols-outlined text-white">photo_camera</span>
+                            </div>
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 bg-primary text-white size-8 rounded-full border-4 border-white dark:border-dark-surface flex items-center justify-center shadow-lg">
+                            <span className="material-symbols-outlined text-sm">verified</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-black tracking-tight">João Silva</h1>
+                        <p className="text-gray-500 dark:text-gray-400 font-medium">Membro desde Outubro, 2023 • ID: #4429</p>
+                    </div>
+                </div>
+                <div className="bg-primary/10 dark:bg-primary/20 border border-primary/20 px-4 py-3 rounded-2xl flex items-center gap-3">
+                    <div className="bg-primary size-10 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                        <span className="material-symbols-outlined whitespace-nowrap">military_tech</span>
+                    </div>
+                    <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-primary">Programa Social</p>
+                        <p className="text-sm font-black">ISENÇÃO 100% APROVADA</p>
+                    </div>
+                </div>
             </div>
-            <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">Pedido Realizado!</h2>
-            <p className="text-gray-500 max-sm mb-10 leading-relaxed font-medium">
-                Seu pagamento foi aprovado com sucesso. Você já pode acompanhar o status da sua entrega na aba de pedidos.
-            </p>
-            <div className="flex gap-4">
-                <button
-                    onClick={onHome}
-                    className="bg-primary text-[#0e1b12] font-black px-8 py-4 rounded-xl shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all font-display"
-                >
-                    Voltar ao Início
-                </button>
-                <button className="border border-gray-200 dark:border-white/10 text-gray-500 font-bold px-8 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all">
-                    Ver Pedido
-                </button>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Dados Pessoais */}
+                <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm flex flex-col h-full">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-gray-50 dark:bg-white/5 rounded-lg text-primary">
+                                <span className="material-symbols-outlined">person</span>
+                            </div>
+                            <h3 className="font-bold">Dados Pessoais</h3>
+                        </div>
+                        <button className="text-xs font-bold text-primary hover:underline">Alterar</button>
+                    </div>
+                    <div className="space-y-4">
+                        <div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase">CPF</p>
+                            <p className="font-medium">123.456.789-00</p>
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase">E-mail</p>
+                            <p className="font-medium">joao.silva@email.com</p>
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase">Telefone</p>
+                            <p className="font-medium">(11) 98765-4321</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Documentos */}
+                <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm flex flex-col h-full">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-gray-50 dark:bg-white/5 rounded-lg text-primary">
+                                <span className="material-symbols-outlined">folder_shared</span>
+                            </div>
+                            <h3 className="font-bold">Documentos</h3>
+                        </div>
+                    </div>
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-transparent hover:border-primary/20 transition-all cursor-pointer">
+                            <div className="flex items-center gap-3">
+                                <span className="material-symbols-outlined text-gray-400">description</span>
+                                <span className="text-sm font-medium">Prescrição Médica</span>
+                            </div>
+                            <span className="material-symbols-outlined text-sm text-primary">verified</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-transparent hover:border-primary/20 transition-all cursor-pointer">
+                            <div className="flex items-center gap-3">
+                                <span className="material-symbols-outlined text-gray-400">badge</span>
+                                <span className="text-sm font-medium">Identidade (RG/CNH)</span>
+                            </div>
+                            <span className="material-symbols-outlined text-sm text-primary">verified</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-transparent hover:border-primary/20 transition-all cursor-pointer">
+                            <div className="flex items-center gap-3">
+                                <span className="material-symbols-outlined text-gray-400">home</span>
+                                <span className="text-sm font-medium">Comprovante Residência</span>
+                            </div>
+                            <span className="text-[10px] font-bold text-amber-500">PENDENTE</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Anvisa */}
+                <div className="bg-primary/5 dark:bg-[#1a2e20] p-6 rounded-2xl border border-primary/20 shadow-sm flex flex-col h-full">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                                <span className="material-symbols-outlined">verified_user</span>
+                            </div>
+                            <h3 className="font-bold">Autorização Anvisa</h3>
+                        </div>
+                    </div>
+                    <div className="flex-1">
+                        <div className="p-4 bg-white dark:bg-dark-surface/50 rounded-xl border border-primary/20 mb-4">
+                            <p className="text-[10px] font-black text-primary uppercase mb-1">Status Oficial</p>
+                            <p className="text-base font-black">ATIVA E VÁLIDA</p>
+                            <p className="text-xs text-gray-500 font-medium">Vencimento: 12/2024</p>
+                        </div>
+                        <button className="w-full py-3 bg-primary text-white font-bold rounded-xl text-sm shadow-lg shadow-primary/20 hover:brightness-105 transition-all">Ver PDF Oficial</button>
+                    </div>
+                </div>
+
+                {/* Endereços */}
+                <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm col-span-1 lg:col-span-2">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-gray-50 dark:bg-white/5 rounded-lg text-primary">
+                                <span className="material-symbols-outlined">local_shipping</span>
+                            </div>
+                            <h3 className="font-bold">Endereços Salvos</h3>
+                        </div>
+                        <button className="text-xs font-bold text-primary hover:underline">+ Adicionar novo</button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-xl border-2 border-primary/20 relative">
+                            <div className="absolute top-3 right-3">
+                                <span className="bg-primary text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">Principal</span>
+                            </div>
+                            <h4 className="font-bold text-sm mb-1">Residencial</h4>
+                            <p className="text-xs text-gray-500 font-medium leading-relaxed">Rua das Flores, 123 - Ap 42<br />Jardim Paulista, São Paulo - SP<br />CEP: 01415-000</p>
+                        </div>
+                        <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-all cursor-pointer">
+                            <h4 className="font-bold text-sm mb-1">Trabalho</h4>
+                            <p className="text-xs text-gray-500 font-medium leading-relaxed">Av. Brigadeiro Faria Lima, 4567<br />Itaim Bibi, São Paulo - SP<br />CEP: 04538-133</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Suporte */}
+                <div className="bg-[#112116] p-6 rounded-2xl text-white shadow-xl relative overflow-hidden group">
+                    <div className="absolute -right-8 -top-8 size-32 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/30 transition-all duration-500" />
+                    <div className="flex flex-col h-full relative z-10">
+                        <div className="size-12 bg-primary/20 rounded-2xl flex items-center justify-center text-primary mb-6">
+                            <span className="material-symbols-outlined text-2xl">support_agent</span>
+                        </div>
+                        <h3 className="text-lg font-black mb-2">Suporte ao Paciente</h3>
+                        <p className="text-gray-400 text-sm font-medium mb-auto">Atendimento especializado 24/7 para tirar suas dúvidas sobre o tratamento.</p>
+                        <button className="w-full mt-6 py-3 bg-primary text-white font-black rounded-xl text-sm shadow-lg shadow-primary/20 hover:brightness-105 transition-all">Iniciar Chat Agora</button>
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -2233,13 +2698,13 @@ export default function App() {
                         <SidebarInfoCard icon="local_shipping" label="Próximo Pedido" title="Chega em 3 dias" subtitle="Rastrear Entrega" variant="default" actionLabel="Ver Detalhes" />
                     </div>
                 </div>
-                <div className="mt-auto pt-6 border-t border-gray-100 dark:border-white/10 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-cover" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDrtKeZhqdggv1wsvLq0DOybOiQ2V61oHjkC7mifSoS1wgPTqxFGcLwD0hU12IWe8h048zjzVk4KBcVXZJfD3HhIQGQE13UGkr9vgHsTHkhzkvedoTfIFr8bGoY3FLcrrND7LIzLXWN0lLbDZNZeDTLuJuyaanCdBCLujd9z48xs3Cq-5YH6vdvImklSwX-P6rcOomkyhB58u-JDr6WudVZOQDNWeOqVQaZ8SjwJ6U5UichLoW_SBmtVg_aWfw2mlD6irLV2JHlYMI')" }}></div>
+                <div className="mt-auto pt-6 border-t border-gray-100 dark:border-white/10 flex items-center gap-3 cursor-pointer group" onClick={() => setActivePage('profile')}>
+                    <div className="w-10 h-10 rounded-full bg-cover border-2 border-transparent group-hover:border-primary transition-all" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDrtKeZhqdggv1wsvLq0DOybOiQ2V61oHjkC7mifSoS1wgPTqxFGcLwD0hU12IWe8h048zjzVk4KBcVXZJfD3HhIQGQE13UGkr9vgHsTHkhzkvedoTfIFr8bGoY3FLcrrND7LIzLXWN0lLbDZNZeDTLuJuyaanCdBCLujd9z48xs3Cq-5YH6vdvImklSwX-P6rcOomkyhB58u-JDr6WudVZOQDNWeOqVQaZ8SjwJ6U5UichLoW_SBmtVg_aWfw2mlD6irLV2JHlYMI')" }}></div>
                     <div className="flex flex-col">
-                        <p className="text-sm font-bold">João Silva</p>
+                        <p className="text-sm font-bold group-hover:text-primary transition-colors">João Silva</p>
                         <p className="text-xs text-gray-500">ID: #4429</p>
                     </div>
-                    <button onClick={handleLogout} className="ml-auto text-gray-400 hover:text-red-500 transition-colors">
+                    <button onClick={(e) => { e.stopPropagation(); handleLogout(); }} className="ml-auto text-gray-400 hover:text-red-500 transition-colors">
                         <span className="material-symbols-outlined text-sm">logout</span>
                     </button>
                 </div>
@@ -2293,7 +2758,8 @@ export default function App() {
                                                             activePage === 'reports' ? 'Relatos do Paciente' :
                                                                 activePage === 'documents' ? 'Documentação' :
                                                                     activePage === 'anvisa' ? 'Autorização ANVISA' :
-                                                                        'Profissionais'}
+                                                                        activePage === 'profile' ? 'Meu Perfil' :
+                                                                            'Profissionais'}
                         </h2>
                         <div className="flex items-center gap-2 md:gap-4">
                             <button onClick={toggleDarkMode} className="lg:hidden p-2 rounded-lg text-gray-400 border border-gray-100 dark:border-white/5">
@@ -2310,7 +2776,7 @@ export default function App() {
                 <div className="max-w-6xl mx-auto p-4 md:p-8">
                     <AnimatePresence mode="wait">
                         <motion.div key={activePage === 'product_details' ? `pd-${selectedProduct?.name}` : activePage} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ duration: 0.2 }}>
-                            {activePage === 'dashboard' && <DashboardPage />}
+                            {activePage === 'dashboard' && <DashboardPage setActivePage={setActivePage} />}
                             {activePage === 'pharmacy' && (
                                 <PharmacyPage
                                     onProductSelect={(product) => {
@@ -2354,6 +2820,7 @@ export default function App() {
                             {activePage === 'reports' && <PatientReportsPage />}
                             {activePage === 'documents' && <DocumentsPage activeSubPage="documents" />}
                             {activePage === 'anvisa' && <DocumentsPage activeSubPage="anvisa" />}
+                            {activePage === 'profile' && <ProfilePage isDarkMode={isDarkMode} />}
                             {activePage === 'product_details' && selectedProduct && (
                                 <ProductDetailsPage
                                     product={selectedProduct}
@@ -2479,16 +2946,16 @@ export default function App() {
                             </nav>
 
                             <div className="mt-auto pt-6 border-t border-gray-100 dark:border-white/10">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-10 h-10 rounded-full bg-gray-200" />
-                                    <div className="flex flex-col">
-                                        <p className="text-sm font-bold">João Silva</p>
+                                <div className="flex items-center gap-3 mb-6 cursor-pointer group" onClick={() => { setActivePage('profile'); setIsMobileMenuOpen(false); }}>
+                                    <div className="w-10 h-10 rounded-full bg-cover border-2 border-transparent group-hover:border-primary transition-all" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDrtKeZhqdggv1wsvLq0DOybOiQ2V61oHjkC7mifSoS1wgPTqxFGcLwD0hU12IWe8h048zjzVk4KBcVXZJfD3HhIQGQE13UGkr9vgHsTHkhzkvedoTfIFr8bGoY3FLcrrND7LIzLXWN0lLbDZNZeDTLuJuyaanCdBCLujd9z48xs3Cq-5YH6vdvImklSwX-P6rcOomkyhB58u-JDr6WudVZOQDNWeOqVQaZ8SjwJ6U5UichLoW_SBmtVg_aWfw2mlD6irLV2JHlYMI')" }} />
+                                    <div className="flex flex-col text-left">
+                                        <p className="text-sm font-bold group-hover:text-primary transition-colors">João Silva</p>
                                         <p className="text-xs text-gray-500">ID: #4429</p>
                                     </div>
+                                    <span className="material-symbols-outlined ml-auto text-gray-300 group-hover:text-primary transition-colors">chevron_right</span>
                                 </div>
-                                <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 font-bold transition-all hover:bg-red-100 dark:hover:bg-red-500/20">
-                                    <span className="material-symbols-outlined text-sm">logout</span>
-                                    <span>Sair da conta</span>
+                                <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="p-2 rounded-lg text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors">
+                                    <span className="material-symbols-outlined">logout</span>
                                 </button>
                             </div>
                         </motion.div>
