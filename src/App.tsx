@@ -1343,12 +1343,14 @@ const LoginPage = ({ onLogin, onSwitchToRegister, isDarkMode }: { onLogin: () =>
     return (
         <div className="flex flex-col lg:flex-row w-full min-h-screen bg-background-light dark:bg-background-dark font-display text-text-main dark:text-white transition-colors duration-200">
             {/* Left Panel - Hidden on mobile, visible on LG+ */}
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#144443]">
-                <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#144443] via-[#144443]/40 to-transparent"></div>
-                <div
-                    className="absolute inset-0 w-full h-full bg-cover bg-center"
-                    style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAXdPRVe8aviHVjb4qqOYNPzRhQMcB-NjJf4qyx8IIQC2rkYxzL01CII380Sd4yCIAQ3uGEpRhyZHhICpEO77GHqVfDVSyyX79snnhW2_g3DSy1LmTNZ4GR3COLHYe1FtOxxnNHoPuc8eKyERa4sOnNviTTYg9YAIdmQMJ5AO8SM472JqPDouRXF_ao4tLMhnFoeGCaeA_S84wJdYeoJ240IkUaAbOQDER-8CTWHr5dsji5XjrGbGhPuS51HiWNRW_UNA6MjZazTxw")' }}
-                ></div>
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#112116]">
+                <img
+                    alt="Doctor"
+                    className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-80"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXdPRVe8aviHVjb4qqOYNPzRhQMcB-NjJf4qyx8IIQC2rkYxzL01CII380Sd4yCIAQ3uGEpRhyZHhICpEO77GHqVfDVSyyX79snnhW2_g3DSy1LmTNZ4GR3COLHYe1FtOxxnNHoPuc8eKyERa4sOnNviTTYg9YAIdmQMJ5AO8SM472JqPDouRXF_ao4tLMhnFoeGCaeA_S84wJdYeoJ240IkUaAbOQDER-8CTWHr5dsji5XjrGbGhPuS51HiWNRW_UNA6MjZazTxw"
+                />
+                <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#112116] via-[#112116]/40 to-transparent"></div>
+                <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#112116] via-transparent to-[#112116]/20"></div>
                 <div className="relative z-20 flex flex-col justify-end p-20 text-white w-full h-full">
                     <div className="flex items-center gap-3 mb-8">
                         <div className="size-12 text-primary">
@@ -1467,13 +1469,14 @@ const RegisterPage = ({ onBackToLogin, isDarkMode }: { onBackToLogin: () => void
 
     return (
         <div className="flex min-h-screen w-full bg-white dark:bg-background-dark font-display">
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#144443]">
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#112116]">
                 <img
                     alt="Smiling doctor"
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-80"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuAii9FSfW08r8Zs0Jhm_7e24VC2KSeYU3knCsknNrgO4YthJBocBIbFpcRWQDpSpoECJ9P6ST4HIaibUR--s_0lFu_XmWXiuP7GoJ7I6cl1ere25wfpjbJdaC4Ir1Ttxm5i0Uf1FDHXESk7D7jgOCmo5XF0N83UmQC84ZKbfihAQ3GaKk2t-5PQkjO9JpCtrKO5aGY1LgT7AfQoKRTvqKH29MSlkvz_ZdPZo9F65vf0pi8PqEsnoOdC9KLAhwWNbSBJE1HuzvO08-g"
                 />
-                <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#144443] via-[#144443]/40 to-transparent"></div>
+                <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#112116] via-[#112116]/40 to-transparent"></div>
+                <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#112116] via-transparent to-[#112116]/20"></div>
                 <div className="relative z-10 flex flex-col justify-between p-12 w-full">
                     <div className="flex items-center gap-3 text-white">
                         <div className="size-10">
