@@ -2,7 +2,16 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Types ---
-type Page = 'dashboard' | 'orders' | 'appointments' | 'professionals' | 'pharmacy';
+type Page = 'dashboard' | 'orders' | 'appointments' | 'professionals' | 'pharmacy' | 'product_details' | 'cart' | 'checkout' | 'payment_success';
+
+interface CartItem {
+    name: string;
+    price: number;
+    priceString: string;
+    image: string;
+    category: string;
+    quantity: number;
+}
 
 // --- Sidebar Item ---
 const SidebarItem = ({ icon, label, active = false, onClick }: { icon: string, label: string, active?: boolean, onClick: () => void }) => (
@@ -59,12 +68,12 @@ const ProfessionalGridCard = ({ name, specialty, image, verified = false }: { na
 );
 
 // --- Component: Product Card (Pharmacy) ---
-const ProductCard = ({ name, category, price, oldPrice, image, badge }: { name: string, category: string, price: string, oldPrice: string, image: string, badge?: string }) => (
+const ProductCard = ({ name, category, price, oldPrice, image, badge, onProductClick, onAddToCart }: { name: string, category: string, price: string, oldPrice: string, image: string, badge?: string, onProductClick: () => void, onAddToCart: () => void }) => (
     <motion.div
         whileHover={{ y: -5 }}
-        className="product-card group bg-white dark:bg-dark-surface rounded-2xl border border-gray-100 dark:border-white/10 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-300"
+        className="product-card group bg-white dark:bg-dark-surface rounded-2xl border border-gray-100 dark:border-white/10 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 cursor-pointer"
     >
-        <div className="relative aspect-square bg-gray-50 dark:bg-white/5 flex items-center justify-center p-8 overflow-hidden">
+        <div onClick={onProductClick} className="relative aspect-square bg-gray-50 dark:bg-white/5 flex items-center justify-center p-8 overflow-hidden">
             <img src={image} alt={name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
             {badge && (
                 <span className={`absolute top-4 left-4 ${badge === 'MAIS VENDIDO' ? 'bg-primary' : 'bg-amber-500'} text-white text-[10px] font-bold px-2 py-1 rounded`}>
@@ -72,7 +81,10 @@ const ProductCard = ({ name, category, price, oldPrice, image, badge }: { name: 
                 </span>
             )}
             <div className="add-to-cart-btn absolute inset-x-4 bottom-4 opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                <button className="w-full bg-primary text-text-main font-bold py-3 rounded-xl shadow-lg shadow-primary/30 flex items-center justify-center gap-2 hover:bg-primary/90">
+                <button
+                    onClick={(e) => { e.stopPropagation(); onAddToCart(); }}
+                    className="w-full bg-primary text-text-main font-bold py-3 rounded-xl shadow-lg shadow-primary/30 flex items-center justify-center gap-2 hover:bg-primary/90"
+                >
                     <span className="material-symbols-outlined text-sm">add_shopping_cart</span>
                     Adicionar ao Carrinho
                 </button>
@@ -469,7 +481,7 @@ const OrdersPage = () => (
 );
 
 // --- Page: Pharmacy ---
-const PharmacyPage = () => {
+const PharmacyPage = ({ onProductSelect, onAddToCart, onCartClick, cart, cartSubtotal }: { onProductSelect: (product: any) => void, onAddToCart: (product: any) => void, onCartClick: () => void, cart: CartItem[], cartSubtotal: number }) => {
     const [activeCategory, setActiveCategory] = useState('Todos');
     const categories = ['Óleos Full Spectrum', 'Isolados', 'Cápsulas', 'Tópicos & Cremes', 'Flores In Natura'];
 
@@ -516,20 +528,33 @@ const PharmacyPage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {products.filter(p => activeCategory === 'Todos' || p.category === activeCategory).map((product, i) => (
-                    <ProductCard key={i} {...product} />
+                    <ProductCard key={i} {...product} onProductClick={() => onProductSelect(product)} onAddToCart={() => onAddToCart(product)} />
                 ))}
             </div>
 
             {/* Floating Cart Button */}
-            <div className="fixed bottom-8 right-8 z-50">
-                <motion.button initial={{ scale: 0 }} animate={{ scale: 1 }} whileHover={{ scale: 1.05 }} className="flex items-center gap-3 bg-text-main dark:bg-primary text-white dark:text-text-main px-6 py-4 rounded-full shadow-2xl">
-                    <div className="relative">
-                        <span className="material-symbols-outlined text-2xl">shopping_cart</span>
-                        <span className="absolute -top-2 -right-2 bg-primary dark:bg-white text-white dark:text-text-main text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full">3</span>
-                    </div>
-                    <div className="text-left leading-none uppercase"><p className="text-[10px] font-bold opacity-70 tracking-tighter">Carrinho</p><p className="text-sm font-black">R$ 1.124,00</p></div>
-                </motion.button>
-            </div>
+            {cart.length > 0 && (
+                <div className="fixed bottom-8 right-8 z-50">
+                    <motion.button
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        whileHover={{ scale: 1.05 }}
+                        onClick={onCartClick}
+                        className="flex items-center gap-3 bg-text-main dark:bg-primary text-white dark:text-text-main px-6 py-4 rounded-full shadow-2xl"
+                    >
+                        <div className="relative">
+                            <span className="material-symbols-outlined text-2xl">shopping_cart</span>
+                            <span className="absolute -top-2 -right-2 bg-primary dark:bg-white text-white dark:text-text-main text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full">
+                                {cart.reduce((acc, item) => acc + item.quantity, 0)}
+                            </span>
+                        </div>
+                        <div className="text-left leading-none uppercase">
+                            <p className="text-[10px] font-bold opacity-70 tracking-tighter">Carrinho</p>
+                            <p className="text-sm font-black">R$ {cartSubtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                        </div>
+                    </motion.button>
+                </div>
+            )}
         </div>
     );
 };
@@ -955,11 +980,14 @@ const LoginPage = ({ onLogin, onSwitchToRegister }: { onLogin: () => void, onSwi
 
 // --- Page: Register ---
 const RegisterPage = ({ onBackToLogin }: { onBackToLogin: () => void }) => {
+    const [step, setStep] = useState(1);
+    const [userType, setUserType] = useState('paciente');
+
     return (
         <div className="flex min-h-screen w-full bg-white dark:bg-background-dark font-display">
             <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#144443]">
                 <img
-                    alt="Smiling doctor in a modern clinical setting holding a medicinal cannabis dropper bottle"
+                    alt="Smiling doctor"
                     className="absolute inset-0 w-full h-full object-cover"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuAii9FSfW08r8Zs0Jhm_7e24VC2KSeYU3knCsknNrgO4YthJBocBIbFpcRWQDpSpoECJ9P6ST4HIaibUR--s_0lFu_XmWXiuP7GoJ7I6cl1ere25wfpjbJdaC4Ir1Ttxm5i0Uf1FDHXESk7D7jgOCmo5XF0N83UmQC84ZKbfihAQ3GaKk2t-5PQkjO9JpCtrKO5aGY1LgT7AfQoKRTvqKH29MSlkvz_ZdPZo9F65vf0pi8PqEsnoOdC9KLAhwWNbSBJE1HuzvO08-g"
                 />
@@ -985,110 +1013,556 @@ const RegisterPage = ({ onBackToLogin }: { onBackToLogin: () => void }) => {
             </div>
             <div className="w-full lg:w-1/2 flex flex-col bg-white dark:bg-background-dark overflow-y-auto scrollbar-hide">
                 <div className="max-w-[540px] w-full mx-auto px-6 py-12 lg:py-16 flex flex-col h-full">
-                    <div className="flex lg:hidden items-center gap-3 mb-10">
-                        <div className="size-8">
-                            <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                <path clipRule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="#30e86e" fillRule="evenodd"></path>
-                                <path clipRule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="#30e86e" fillRule="evenodd"></path>
-                            </svg>
-                        </div>
-                        <span className="text-xl font-bold">Rootcare</span>
-                    </div>
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-extrabold text-[#0e1b12] dark:text-white mb-2 font-display">Criar sua conta</h1>
-                        <p className="text-gray-500 dark:text-gray-400">Junte-se à nossa plataforma de saúde integrada.</p>
-                    </div>
-                    <div className="mb-10">
-                        <div className="flex justify-between items-end mb-2">
-                            <span className="text-xs font-bold text-primary tracking-wider uppercase">Passo 1 de 3: Perfil</span>
-                            <span className="text-xs font-medium text-gray-500">33% concluído</span>
-                        </div>
-                        <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                            <div className="h-full bg-primary w-1/3 rounded-full transition-all duration-500"></div>
-                        </div>
-                    </div>
-                    <div className="mb-10">
-                        <h3 className="text-sm font-bold text-[#0e1b12] dark:text-gray-200 mb-4">Como você deseja usar o Rootcare?</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <button className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-primary bg-primary/5 text-[#0e1b12] dark:text-white transition-all">
-                                <span className="material-symbols-outlined text-primary mb-2 text-3xl">person</span>
-                                <span className="text-sm font-bold">Paciente</span>
-                            </button>
-                            <button className="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 hover:border-primary/50 transition-all">
-                                <span className="material-symbols-outlined mb-2 text-3xl">medical_services</span>
-                                <span className="text-sm font-bold">Médico</span>
-                            </button>
-                            <button className="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 hover:border-primary/50 transition-all">
-                                <span className="material-symbols-outlined mb-2 text-3xl">clinical_notes</span>
-                                <span className="text-sm font-bold">Profissional</span>
-                            </button>
-                        </div>
-                    </div>
-                    <form className="space-y-5">
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="fullname">Nome Completo</label>
-                            <input
-                                className="block w-full px-4 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white placeholder:text-gray-400"
-                                id="fullname"
-                                placeholder="Seu nome completo"
-                                type="text"
-                                style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
-                            />
-                        </div>
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="email">E-mail</label>
-                            <input
-                                className="block w-full px-4 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white placeholder:text-gray-400"
-                                id="email"
-                                placeholder="seu@email.com"
-                                type="email"
-                                style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
-                            />
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="cpf">CPF / Documento</label>
-                                <input
-                                    className="block w-full px-4 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white placeholder:text-gray-400"
-                                    id="cpf"
-                                    placeholder="000.000.000-00"
-                                    type="text"
-                                    style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
-                                />
+                    {step < 3 && (
+                        <>
+                            <div className="flex lg:hidden items-center gap-3 mb-10">
+                                <div className="size-8">
+                                    <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                        <path clipRule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="#30e86e" fillRule="evenodd"></path>
+                                        <path clipRule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="#30e86e" fillRule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <span className="text-xl font-bold">Rootcare</span>
                             </div>
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="association">Associação</label>
-                                <select
-                                    className="block w-full px-4 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white"
-                                    id="association"
-                                    style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+
+                            <div className="mb-8">
+                                <button
+                                    onClick={() => step > 1 ? setStep(step - 1) : onBackToLogin()}
+                                    className="flex items-center gap-2 text-gray-500 hover:text-primary transition-colors mb-4 group"
                                 >
-                                    <option disabled value="">Vínculo opcional</option>
-                                    <option value="1">Associação Abrace Esperança</option>
-                                    <option value="2">Apepi</option>
-                                    <option value="3">Cultive</option>
-                                    <option value="4">Não possuo vínculo</option>
-                                </select>
+                                    <span className="material-symbols-outlined text-sm transition-transform group-hover:-translate-x-1">arrow_back</span>
+                                    <span className="text-xs font-bold uppercase tracking-wider">Voltar</span>
+                                </button>
+                                <h1 className="text-3xl font-extrabold text-[#0e1b12] dark:text-white mb-2 font-display">
+                                    {step === 1 ? 'Criar sua conta' : 'Segurança da conta'}
+                                </h1>
+                                <p className="text-gray-500 dark:text-gray-400">
+                                    {step === 1 ? 'Junte-se à nossa plataforma de saúde integrada.' : 'Defina sua senha de acesso para continuar.'}
+                                </p>
                             </div>
-                        </div>
-                        <div className="pt-6">
-                            <button className="w-full bg-primary hover:bg-primary-dark text-[#0e1b12] font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2 group" type="button">
-                                <span>Próximo Passo</span>
-                                <span className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">arrow_forward</span>
+
+                            <div className="mb-10">
+                                <div className="flex justify-between items-end mb-2">
+                                    <span className="text-xs font-bold text-primary tracking-wider uppercase">Passo {step} de 3: {step === 1 ? 'Perfil' : 'Senhas'}</span>
+                                    <span className="text-xs font-medium text-gray-500">{step === 1 ? '33%' : '66%'} concluído</span>
+                                </div>
+                                <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-primary rounded-full transition-all duration-500"
+                                        style={{ width: `${(step / 3) * 100}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+
+                            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                                {step === 1 && (
+                                    <>
+                                        <div className="mb-10">
+                                            <h3 className="text-sm font-bold text-[#0e1b12] dark:text-gray-200 mb-4">Como você deseja usar o Rootcare?</h3>
+                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setUserType('paciente')}
+                                                    className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${userType === 'paciente' ? 'border-primary bg-primary/5 text-[#0e1b12] dark:text-white' : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 hover:border-primary/50'}`}
+                                                >
+                                                    <span className={`material-symbols-outlined mb-2 text-3xl ${userType === 'paciente' ? 'text-primary' : ''}`}>person</span>
+                                                    <span className="text-sm font-bold">Paciente</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setUserType('medico')}
+                                                    className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${userType === 'medico' ? 'border-primary bg-primary/5 text-[#0e1b12] dark:text-white' : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 hover:border-primary/50'}`}
+                                                >
+                                                    <span className={`material-symbols-outlined mb-2 text-3xl ${userType === 'medico' ? 'text-primary' : ''}`}>medical_services</span>
+                                                    <span className="text-sm font-bold">Médico</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setUserType('profissional')}
+                                                    className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${userType === 'profissional' ? 'border-primary bg-primary/5 text-[#0e1b12] dark:text-white' : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 hover:border-primary/50'}`}
+                                                >
+                                                    <span className={`material-symbols-outlined mb-2 text-3xl ${userType === 'profissional' ? 'text-primary' : ''}`}>clinical_notes</span>
+                                                    <span className="text-sm font-bold">Profissional</span>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-5">
+                                            <div className="space-y-1.5">
+                                                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="fullname">Nome Completo</label>
+                                                <input
+                                                    className="block w-full px-4 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white placeholder:text-gray-400"
+                                                    id="fullname"
+                                                    placeholder="Seu nome completo"
+                                                    type="text"
+                                                    style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                                />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="email">E-mail</label>
+                                                <input
+                                                    className="block w-full px-4 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white placeholder:text-gray-400"
+                                                    id="email"
+                                                    placeholder="seu@email.com"
+                                                    type="email"
+                                                    style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                                <div className="space-y-1.5">
+                                                    <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="cpf">CPF / Documento</label>
+                                                    <input
+                                                        className="block w-full px-4 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white placeholder:text-gray-400"
+                                                        id="cpf"
+                                                        placeholder="000.000.000-00"
+                                                        type="text"
+                                                        style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                                    />
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                    <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="association">Associação</label>
+                                                    <select
+                                                        className="block w-full px-4 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white"
+                                                        id="association"
+                                                        style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                                    >
+                                                        <option disabled value="">Vínculo opcional</option>
+                                                        <option value="1">Associação Abrace Esperança</option>
+                                                        <option value="2">Apepi</option>
+                                                        <option value="3">Cultive</option>
+                                                        <option value="4">Não possuo vínculo</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                {step === 2 && (
+                                    <div className="space-y-5">
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="password">Senha de Acesso</label>
+                                            <div className="relative">
+                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined">lock</span>
+                                                <input
+                                                    className="block w-full pl-12 pr-4 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white placeholder:text-gray-400"
+                                                    id="password"
+                                                    placeholder="Mínimo 8 caracteres"
+                                                    type="password"
+                                                    style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight" htmlFor="confirm-password">Confirmar Senha</label>
+                                            <div className="relative">
+                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined">security</span>
+                                                <input
+                                                    className="block w-full pl-12 pr-4 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white placeholder:text-gray-400"
+                                                    id="confirm-password"
+                                                    placeholder="Repita sua senha"
+                                                    type="password"
+                                                    style={{ WebkitBoxShadow: '0 0 0px 1000px #f1f5f9 inset', WebkitTextFillColor: '#0e1b12' }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="p-4 bg-primary/5 rounded-xl border border-primary/10">
+                                            <div className="flex items-start gap-3">
+                                                <span className="material-symbols-outlined text-primary text-xl">info</span>
+                                                <p className="text-xs text-gray-500 leading-relaxed">Sua senha deve conter pelo menos 8 caracteres, incluindo uma letra maiúscula, um número e um caractere especial.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="pt-6">
+                                    <button
+                                        onClick={() => setStep(step + 1)}
+                                        className="w-full bg-primary hover:bg-primary-dark text-[#0e1b12] font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2 group"
+                                        type="button"
+                                    >
+                                        <span>{step === 2 ? 'Finalizar Cadastro' : 'Próximo Passo'}</span>
+                                        <span className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
+                                            {step === 2 ? 'check_circle' : 'arrow_forward'}
+                                        </span>
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div className="mt-10 flex flex-col items-center gap-4">
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    Já possui uma conta? <button onClick={onBackToLogin} className="text-primary font-bold hover:underline">Fazer Login</button>
+                                </p>
+                            </div>
+                        </>
+                    )}
+
+                    {step === 3 && (
+                        <div className="flex-1 flex flex-col items-center justify-center text-center animate-in fade-in zoom-in duration-500">
+                            <div className="size-20 bg-primary/20 text-primary rounded-full flex items-center justify-center mb-8">
+                                <span className="material-symbols-outlined text-5xl">task_alt</span>
+                            </div>
+                            <h1 className="text-3xl font-black text-[#0e1b12] dark:text-white mb-4">Cadastro realizado!</h1>
+                            <p className="text-gray-500 dark:text-gray-400 max-w-sm mb-10">Enviamos um e-mail de confirmação para você. Verifique sua caixa de entrada para ativar sua conta.</p>
+                            <button
+                                onClick={onBackToLogin}
+                                className="w-full max-w-xs bg-[#0e1b12] dark:bg-primary text-white dark:text-[#0e1b12] font-bold py-4 rounded-xl shadow-xl transition-all hover:scale-[1.02]"
+                            >
+                                Ir para o Login
                             </button>
                         </div>
-                    </form>
-                    <div className="mt-10 flex flex-col items-center gap-4">
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                            Já possui uma conta? <button onClick={onBackToLogin} className="text-primary font-bold hover:underline">Fazer Login</button>
+                    )}
+
+                    <div className="mt-auto pt-10 flex items-center justify-center gap-6">
+                        <a className="text-xs text-gray-400 hover:text-primary transition-colors" href="#">Termos de Uso</a>
+                        <a className="text-xs text-gray-400 hover:text-primary transition-colors" href="#">Privacidade</a>
+                        <a className="text-xs text-gray-400 hover:text-primary transition-colors" href="#">Suporte</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// --- Page: Product Details ---
+const ProductDetailsPage = ({ product, onBack, onAddToCart }: { product: any, onBack: () => void, onAddToCart: (product: any, qty: number) => void }) => {
+    const [quantity, setQuantity] = useState(1);
+    return (
+        <div className="space-y-8 animate-in fade-in duration-300">
+            <header className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+                <button onClick={onBack} className="hover:text-primary transition-colors">Voltar para Loja</button>
+                <span className="material-symbols-outlined text-xs">chevron_right</span>
+                <span className="text-primary font-semibold">{product.category}</span>
+            </header>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                <div className="lg:col-span-5 space-y-4">
+                    <div className="aspect-square bg-white dark:bg-[#1a2e20] rounded-3xl border border-gray-100 dark:border-white/10 flex items-center justify-center p-12 overflow-hidden shadow-sm">
+                        <img alt={product.name} className="w-full h-full object-contain" src={product.image} />
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                        <button className="aspect-square bg-white dark:bg-[#1a2e20] rounded-xl border-2 border-primary p-2 overflow-hidden">
+                            <img alt="Thumbnail 1" className="w-full h-full object-contain opacity-100" src={product.image} />
+                        </button>
+                        <button className="aspect-square bg-white dark:bg-[#1a2e20] rounded-xl border border-gray-100 dark:border-white/10 p-2 overflow-hidden hover:border-primary/50 transition-colors">
+                            <img alt="Thumbnail 2" className="w-full h-full object-contain opacity-50" src={product.image} />
+                        </button>
+                        <button className="aspect-square bg-white dark:bg-[#1a2e20] rounded-xl border border-gray-100 dark:border-white/10 p-2 overflow-hidden hover:border-primary/50 transition-colors">
+                            <img alt="Thumbnail 3" className="w-full h-full object-contain opacity-50" src={product.image} />
+                        </button>
+                    </div>
+                </div>
+
+                <div className="lg:col-span-7 space-y-8">
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full border border-primary/20 uppercase tracking-wider">{product.category}</span>
+                            <span className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full border border-amber-200 uppercase tracking-wider">Alta Concentração</span>
+                        </div>
+                        <h1 className="text-4xl font-black text-[#0e1b12] dark:text-white leading-tight">{product.name}</h1>
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-2">
+                                <span className="text-gray-400 line-through text-lg">{product.oldPrice}</span>
+                                <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase">Economize 22%</span>
+                            </div>
+                            <div className="flex items-baseline gap-2">
+                                <span className="text-4xl font-black text-primary">{product.price}</span>
+                                <div className="flex items-center gap-1 group cursor-help">
+                                    <span className="text-xs font-bold text-primary/80 uppercase">Preço Humanizado</span>
+                                    <span className="material-symbols-outlined text-sm text-primary/50">info</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed max-w-2xl">
+                            Desenvolvido para tratamentos crônicos, o {product.name.split(' ')[0]} Full Spectrum mantém todos os canabinoides naturais da planta, proporcionando o "efeito comitiva" para máxima eficácia terapêutica em casos de ansiedade severa, dores crônicas e distúrbios do sono.
                         </p>
-                        <div className="flex items-center gap-6 mt-4">
-                            <a className="text-xs text-gray-400 hover:text-primary transition-colors" href="#">Termos de Uso</a>
-                            <a className="text-xs text-gray-400 hover:text-primary transition-colors" href="#">Privacidade</a>
-                            <a className="text-xs text-gray-400 hover:text-primary transition-colors" href="#">Suporte</a>
+                    </div>
+
+                    <div className="space-y-4">
+                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                            Certificações Profissionais
+                            <div className="h-px flex-1 bg-gray-100 dark:bg-white/10"></div>
+                        </h3>
+                        <div className="grid grid-cols-3 gap-4">
+                            <div className="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-center">
+                                <span className="material-symbols-outlined text-primary mb-2">magnification_small</span>
+                                <span className="text-xs font-bold">THC &lt; 0.3%</span>
+                            </div>
+                            <div className="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-center">
+                                <span className="material-symbols-outlined text-primary mb-2">psychiatry</span>
+                                <span className="text-xs font-bold">Orgânico</span>
+                            </div>
+                            <div className="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-center">
+                                <span className="material-symbols-outlined text-primary mb-2">biotech</span>
+                                <span className="text-xs font-bold">Lab Tested</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10">
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2 text-primary">
+                                <span className="material-symbols-outlined text-sm">medical_services</span>
+                                <h4 className="text-xs font-bold uppercase tracking-wider">Guia de Dosagem</h4>
+                            </div>
+                            <p className="text-xs text-gray-500 leading-normal">
+                                Iniciar com 2 gotas (sublingual) 2x ao dia. Ajustar conforme orientação do seu médico Rootcare após a primeira semana.
+                            </p>
+                        </div>
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2 text-primary">
+                                <span className="material-symbols-outlined text-sm">inventory_2</span>
+                                <h4 className="text-xs font-bold uppercase tracking-wider">Especificações</h4>
+                            </div>
+                            <ul className="text-[10px] space-y-1 font-medium text-gray-500">
+                                <li className="flex justify-between"><span>Volume:</span> <span className="text-gray-900 dark:text-white">30ml</span></li>
+                                <li className="flex justify-between"><span>Veículo:</span> <span className="text-gray-900 dark:text-white">Azeite de Oliva Extra Virgem</span></li>
+                                <li className="flex justify-between"><span>Extração:</span> <span className="text-gray-900 dark:text-white">CO2 Supercrítico</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 pt-4">
+                        <div className="flex items-center bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-2">
+                            <button
+                                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                className="p-3 text-gray-400 hover:text-primary"
+                            >
+                                <span className="material-symbols-outlined text-sm font-bold">remove</span>
+                            </button>
+                            <span className="px-4 font-bold">{quantity}</span>
+                            <button
+                                onClick={() => setQuantity(quantity + 1)}
+                                className="p-3 text-gray-400 hover:text-primary"
+                            >
+                                <span className="material-symbols-outlined text-sm font-bold">add</span>
+                            </button>
+                        </div>
+                        <button
+                            onClick={() => onAddToCart(product, quantity)}
+                            className="flex-1 bg-primary text-[#0e1b12] font-black py-4 rounded-xl shadow-xl shadow-primary/20 flex items-center justify-center gap-3 hover:bg-primary/90 transition-all hover:scale-[1.02] active:scale-100"
+                        >
+                            <span className="material-symbols-outlined">add_shopping_cart</span>
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
+// --- Page: Cart ---
+const CartPage = ({ items, onUpdateQuantity, onCheckout, onBack }: { items: CartItem[], onUpdateQuantity: (name: string, delta: number) => void, onCheckout: () => void, onBack: () => void }) => {
+    const total = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+    if (items.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 animate-in fade-in zoom-in duration-300">
+                <div className="w-24 h-24 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-6">
+                    <span className="material-symbols-outlined text-4xl text-gray-300">shopping_cart_off</span>
+                </div>
+                <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Seu carrinho está vazio</h2>
+                <p className="text-gray-500 mb-8">Parece que você ainda não adicionou nenhum tratamento.</p>
+                <button
+                    onClick={onBack}
+                    className="bg-primary text-[#0e1b12] font-black px-8 py-4 rounded-xl shadow-lg shadow-primary/20"
+                >
+                    Voltar para Loja
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-8 animate-in fade-in duration-300">
+            <header className="flex items-center gap-2 text-sm text-gray-500">
+                <button onClick={onBack} className="hover:text-primary transition-colors">Farmácia</button>
+                <span className="material-symbols-outlined text-xs">chevron_right</span>
+                <span className="text-primary font-semibold">Meu Carrinho</span>
+            </header>
+
+            <h1 className="text-3xl font-black text-gray-900 dark:text-white">Meu Carrinho</h1>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="lg:col-span-8 space-y-4">
+                    {items.map((item, idx) => (
+                        <div key={idx} className="bg-white dark:bg-dark-surface p-4 rounded-2xl border border-gray-100 dark:border-white/10 flex items-center gap-6">
+                            <div className="w-24 h-24 bg-gray-50 dark:bg-white/5 rounded-xl p-2 flex items-center justify-center">
+                                <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{item.category}</span>
+                                <h3 className="text-lg font-black text-gray-900 dark:text-white truncate">{item.name}</h3>
+                                <div className="text-primary font-black mt-1">R$ {item.priceString}</div>
+                            </div>
+                            <div className="flex items-center bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/10 p-1">
+                                <button
+                                    onClick={() => onUpdateQuantity(item.name, -1)}
+                                    className="p-2 text-gray-400 hover:text-primary"
+                                >
+                                    <span className="material-symbols-outlined text-sm font-bold">remove</span>
+                                </button>
+                                <span className="px-3 font-bold w-8 text-center">{item.quantity}</span>
+                                <button
+                                    onClick={() => onUpdateQuantity(item.name, 1)}
+                                    className="p-2 text-gray-400 hover:text-primary"
+                                >
+                                    <span className="material-symbols-outlined text-sm font-bold">add</span>
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="lg:col-span-4 space-y-6">
+                    <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-xl shadow-gray-200/50">
+                        <h3 className="text-lg font-black mb-6">Resumo do Pedido</h3>
+                        <div className="space-y-4 text-sm font-bold text-gray-500">
+                            <div className="flex justify-between">
+                                <span>Subtotal</span>
+                                <span className="text-gray-900 dark:text-white text-base">R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span>Frete</span>
+                                <span className="text-green-500 uppercase">Grátis</span>
+                            </div>
+                            <div className="pt-4 border-t border-gray-100 dark:border-white/10 flex justify-between items-baseline">
+                                <span className="text-gray-900 dark:text-white text-lg">Total</span>
+                                <span className="text-3xl font-black text-primary">R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            </div>
+                        </div>
+                        <button
+                            onClick={onCheckout}
+                            className="w-full bg-primary text-[#0e1b12] font-black py-4 rounded-xl mt-8 shadow-xl shadow-primary/20 flex items-center justify-center gap-2 hover:bg-primary/90 transition-all font-display"
+                        >
+                            Finalizar Compra
+                            <span className="material-symbols-outlined">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// --- Page: Checkout ---
+const CheckoutPage = ({ total, onComplete, onBack }: { total: number, onComplete: () => void, onBack: () => void }) => {
+    return (
+        <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-300">
+            <header className="flex items-center gap-2 text-sm text-gray-500">
+                <button onClick={onBack} className="hover:text-primary transition-colors">Carrinho</button>
+                <span className="material-symbols-outlined text-xs">chevron_right</span>
+                <span className="text-primary font-semibold">Checkout</span>
+            </header>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="lg:col-span-7 space-y-6">
+                    <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-xl font-black">Endereço de Entrega</h3>
+                            <button className="text-primary text-xs font-bold uppercase hover:underline">Alterar</button>
+                        </div>
+                        <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-primary/20 flex gap-4">
+                            <span className="material-symbols-outlined text-primary">location_on</span>
+                            <div>
+                                <p className="font-bold text-sm">Rua das Amendoeiras, 452</p>
+                                <p className="text-xs text-gray-500">Jardim Botânico • Rio de Janeiro, RJ</p>
+                                <p className="text-xs text-gray-500">CEP: 22461-122</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm">
+                        <h3 className="text-xl font-black mb-6">Forma de Pagamento</h3>
+                        <div className="grid grid-cols-3 gap-3">
+                            <button className="p-4 border-2 border-primary bg-primary/5 rounded-xl flex flex-col items-center gap-2">
+                                <span className="material-symbols-outlined text-primary">credit_card</span>
+                                <span className="text-[10px] font-bold">Cartão</span>
+                            </button>
+                            <button className="p-4 border border-gray-100 dark:border-white/10 rounded-xl flex flex-col items-center gap-2 group hover:border-primary/50 transition-colors">
+                                <span className="material-symbols-outlined text-gray-400 group-hover:text-primary">qr_code_2</span>
+                                <span className="text-[10px] font-bold">Pix</span>
+                            </button>
+                            <button className="p-4 border border-gray-100 dark:border-white/10 rounded-xl flex flex-col items-center gap-2 group hover:border-primary/50 transition-colors">
+                                <span className="material-symbols-outlined text-gray-400 group-hover:text-primary">description</span>
+                                <span className="text-[10px] font-bold">Boleto</span>
+                            </button>
+                        </div>
+
+                        <div className="mt-6 space-y-4">
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase">Número do Cartão</label>
+                                <input className="w-full p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 outline-none font-bold text-sm focus:ring-1 focus:ring-primary/30" placeholder="0000 0000 0000 0000" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase">Validade</label>
+                                    <input className="w-full p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 outline-none font-bold text-sm focus:ring-1 focus:ring-primary/30" placeholder="MM/AA" />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase">CVV</label>
+                                    <input className="w-full p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 outline-none font-bold text-sm focus:ring-1 focus:ring-primary/30" placeholder="123" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <div className="lg:col-span-5">
+                    <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 sticky top-24 shadow-lg shadow-gray-200/50">
+                        <h3 className="text-lg font-black mb-6">Confirmar Pedido</h3>
+                        <div className="space-y-3 pb-6 border-b border-gray-100 dark:border-white/10 mb-6">
+                            <div className="flex justify-between text-sm text-gray-500">
+                                <span>Itens</span>
+                                <span className="font-bold text-gray-900 dark:text-white">R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            </div>
+                            <div className="flex justify-between text-sm text-gray-500">
+                                <span>Entrega Expressa</span>
+                                <span className="font-bold text-green-500 uppercase">Grátis</span>
+                            </div>
+                        </div>
+                        <div className="flex justify-between items-baseline mb-8">
+                            <span className="text-xl font-black">Total</span>
+                            <span className="text-4xl font-black text-primary">R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                        </div>
+                        <button
+                            onClick={onComplete}
+                            className="w-full bg-primary text-[#0e1b12] font-black py-5 rounded-xl shadow-2xl shadow-primary/20 flex items-center justify-center gap-3 hover:scale-[1.02] transition-all active:scale-100 font-display"
+                        >
+                            Pagar Agora
+                            <span className="material-symbols-outlined">lock</span>
+                        </button>
+                        <p className="text-[10px] text-gray-400 text-center mt-4 uppercase font-bold tracking-wider">Transação Segura • Rootcare Pay</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// --- Page: Success ---
+const SuccessPage = ({ onHome }: { onHome: () => void }) => {
+    return (
+        <div className="flex flex-col items-center justify-center py-20 animate-in fade-in zoom-in duration-500 text-center">
+            <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center mb-8 shadow-2xl shadow-primary/40">
+                <span className="material-symbols-outlined text-5xl text-[#0e1b12] font-black">check</span>
+            </div>
+            <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">Pedido Realizado!</h2>
+            <p className="text-gray-500 max-sm mb-10 leading-relaxed font-medium">
+                Seu pagamento foi aprovado com sucesso. Você já pode acompanhar o status da sua entrega na aba de pedidos.
+            </p>
+            <div className="flex gap-4">
+                <button
+                    onClick={onHome}
+                    className="bg-primary text-[#0e1b12] font-black px-8 py-4 rounded-xl shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all font-display"
+                >
+                    Voltar ao Início
+                </button>
+                <button className="border border-gray-200 dark:border-white/10 text-gray-500 font-bold px-8 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all">
+                    Ver Pedido
+                </button>
             </div>
         </div>
     );
@@ -1099,7 +1573,42 @@ export default function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [authView, setAuthView] = useState<'login' | 'register'>('login');
     const [activePage, setActivePage] = useState<Page>('dashboard');
+    const [selectedProduct, setSelectedProduct] = useState<any>(null);
+    const [cart, setCart] = useState<CartItem[]>([]);
     const [isDarkMode, setIsDarkMode] = useState(false);
+
+    const cartSubtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+    const addToCart = (product: any, qty: number = 1) => {
+        setCart(prev => {
+            const existing = prev.find(item => item.name === product.name);
+            if (existing) {
+                return prev.map(item => item.name === product.name ? { ...item, quantity: item.quantity + qty } : item);
+            }
+            const priceValue = parseFloat(product.price.replace('R$', '').replace('.', '').replace(',', '.'));
+            return [...prev, {
+                name: product.name,
+                price: priceValue,
+                priceString: product.price,
+                image: product.image,
+                category: product.category,
+                quantity: qty
+            }];
+        });
+        alert(`${qty} item(ns) adicionado(s) ao carrinho!`);
+    };
+
+    const updateCartQuantity = (name: string, delta: number) => {
+        setCart(prev => prev.map(item => {
+            if (item.name === name) {
+                const newQty = Math.max(0, item.quantity + delta);
+                return { ...item, quantity: newQty };
+            }
+            return item;
+        }).filter(item => item.quantity > 0));
+    };
+
+    const clearCart = () => setCart([]);
 
     const toggleDarkMode = () => {
         setIsDarkMode(!isDarkMode);
@@ -1128,10 +1637,17 @@ export default function App() {
                 <div className="flex flex-col gap-8">
                     <div className="flex items-center justify-between px-2">
                         <div className="flex items-center gap-3">
-                            <div className="bg-primary/20 p-2 rounded-lg cursor-pointer" onClick={() => setActivePage('dashboard')}><span className="material-symbols-outlined text-primary text-2xl font-bold">eco</span></div>
-                            <div className="flex flex-col"><h1 className="text-lg font-bold uppercase tracking-wider">Rootcare</h1><p className="text-text-muted text-xs font-medium">Portal do Paciente</p></div>
+                            <div className="bg-primary/20 p-2 rounded-lg cursor-pointer" onClick={() => setActivePage('dashboard')}>
+                                <span className="material-symbols-outlined text-primary text-2xl font-bold">eco</span>
+                            </div>
+                            <div className="flex flex-col">
+                                <h1 className="text-lg font-bold uppercase tracking-wider">Rootcare</h1>
+                                <p className="text-text-muted text-xs font-medium">Portal do Paciente</p>
+                            </div>
                         </div>
-                        <button onClick={toggleDarkMode} className="p-2 rounded-lg text-gray-400 hover:text-primary transition-colors"><span className="material-symbols-outlined">{isDarkMode ? 'light_mode' : 'dark_mode'}</span></button>
+                        <button onClick={toggleDarkMode} className="p-2 rounded-lg text-gray-400 hover:text-primary transition-colors">
+                            <span className="material-symbols-outlined">{isDarkMode ? 'light_mode' : 'dark_mode'}</span>
+                        </button>
                     </div>
                     <nav className="flex flex-col gap-1">
                         <SidebarItem icon="grid_view" label="Dashboard" active={activePage === 'dashboard'} onClick={() => setActivePage('dashboard')} />
@@ -1191,10 +1707,24 @@ export default function App() {
                             </div>
                             <h1 className="text-sm font-bold uppercase tracking-wider">Rootcare</h1>
                         </div>
-                        <h2 className="text-base md:text-xl font-bold uppercase tracking-wide truncate ml-2 lg:ml-0">{activePage === 'dashboard' ? 'Dashboard' : activePage === 'pharmacy' ? 'Farmácia Medicinal' : activePage === 'orders' ? 'Meus Pedidos' : activePage === 'appointments' ? 'Consultas' : 'Profissionais'}</h2>
+                        <h2 className="text-base md:text-xl font-bold uppercase tracking-wide truncate ml-2 lg:ml-0">
+                            {activePage === 'dashboard' ? 'Dashboard' :
+                                (activePage === 'pharmacy' || activePage === 'product_details') ? 'Farmácia Medicinal' :
+                                    activePage === 'cart' ? 'Meu Carrinho' :
+                                        activePage === 'checkout' ? 'Checkout' :
+                                            activePage === 'payment_success' ? 'Pedido Confirmado' :
+                                                activePage === 'orders' ? 'Meus Pedidos' :
+                                                    activePage === 'appointments' ? 'Consultas' :
+                                                        'Profissionais'}
+                        </h2>
                         <div className="flex items-center gap-2 md:gap-4">
-                            <button onClick={toggleDarkMode} className="lg:hidden p-2 rounded-lg text-gray-400 border border-gray-100 dark:border-white/5"><span className="material-symbols-outlined text-sm">{isDarkMode ? 'light_mode' : 'dark_mode'}</span></button>
-                            <div className="hidden sm:flex flex-col items-end mr-4"><span className="text-[10px] font-bold text-primary uppercase">Status Financeiro</span><span className="text-xs font-bold text-green-600">Regular</span></div>
+                            <button onClick={toggleDarkMode} className="lg:hidden p-2 rounded-lg text-gray-400 border border-gray-100 dark:border-white/5">
+                                <span className="material-symbols-outlined text-sm">{isDarkMode ? 'light_mode' : 'dark_mode'}</span>
+                            </button>
+                            <div className="hidden sm:flex flex-col items-end mr-4">
+                                <span className="text-[10px] font-bold text-primary uppercase">Status Financeiro</span>
+                                <span className="text-xs font-bold text-green-600">Regular</span>
+                            </div>
                             <button className="bg-primary/10 text-primary px-3 md:px-4 py-1.5 md:py-2 rounded-lg font-bold text-[10px] md:text-sm border border-primary/20">ID Digital</button>
                         </div>
                     </div>
@@ -1202,23 +1732,63 @@ export default function App() {
 
                 <div className="max-w-6xl mx-auto p-4 md:p-8">
                     <AnimatePresence mode="wait">
-                        <motion.div key={activePage} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ duration: 0.2 }}>
+                        <motion.div key={activePage === 'product_details' ? `pd-${selectedProduct?.name}` : activePage} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ duration: 0.2 }}>
                             {activePage === 'dashboard' && <DashboardPage />}
-                            {activePage === 'pharmacy' && <PharmacyPage />}
+                            {activePage === 'pharmacy' && (
+                                <PharmacyPage
+                                    onProductSelect={(product) => {
+                                        setSelectedProduct(product);
+                                        setActivePage('product_details');
+                                    }}
+                                    onAddToCart={(product) => addToCart(product, 1)}
+                                    onCartClick={() => setActivePage('cart')}
+                                    cart={cart}
+                                    cartSubtotal={cartSubtotal}
+                                />
+                            )}
+                            {activePage === 'cart' && (
+                                <CartPage
+                                    items={cart}
+                                    onUpdateQuantity={updateCartQuantity}
+                                    onCheckout={() => setActivePage('checkout')}
+                                    onBack={() => setActivePage('pharmacy')}
+                                />
+                            )}
+                            {activePage === 'checkout' && (
+                                <CheckoutPage
+                                    total={cartSubtotal}
+                                    onComplete={() => {
+                                        clearCart();
+                                        setActivePage('payment_success');
+                                    }}
+                                    onBack={() => setActivePage('cart')}
+                                />
+                            )}
+                            {activePage === 'payment_success' && (
+                                <SuccessPage onHome={() => setActivePage('dashboard')} />
+                            )}
                             {activePage === 'orders' && <OrdersPage />}
                             {activePage === 'appointments' && <AppointmentsPage />}
                             {activePage === 'professionals' && <ProfessionalsPage />}
+                            {activePage === 'product_details' && selectedProduct && (
+                                <ProductDetailsPage
+                                    product={selectedProduct}
+                                    onBack={() => setActivePage('pharmacy')}
+                                    onAddToCart={addToCart}
+                                />
+                            )}
                         </motion.div>
                     </AnimatePresence>
                 </div>
             </main>
 
             <style>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #30e86e33; border-radius: 10px; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
+                .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #30e86e33; border-radius: 10px; }
+                .scrollbar-hide::-webkit-scrollbar { display: none; }
+                .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+            `}</style>
         </div>
     );
 }
+
