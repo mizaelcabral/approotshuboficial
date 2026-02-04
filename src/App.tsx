@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { User, UserRole, Page } from './types';
+import SuperAdminDashboard from './components/SuperAdmin/SuperAdminDashboard';
+import DoctorDashboard from './components/Doctor/DoctorDashboard';
+import InstitutionDashboard from './components/Institution/InstitutionDashboard';
 
 // --- Types ---
-type Page = 'dashboard' | 'orders' | 'appointments' | 'professionals' | 'pharmacy' | 'product_details' | 'cart' | 'checkout' | 'payment_success' | 'addresses' | 'reports' | 'documents' | 'anvisa' | 'profile';
-
 interface CartItem {
     name: string;
     price: number;
@@ -12,6 +14,14 @@ interface CartItem {
     category: string;
     quantity: number;
 }
+
+// Mock user database for demo
+const mockUsers = {
+    'admin@rootcare.com': { id: '1', name: 'Admin Rootcare', email: 'admin@rootcare.com', role: 'super_admin' as UserRole },
+    'medico@rootcare.com': { id: '2', name: 'Dr. Carlos Silva', email: 'medico@rootcare.com', role: 'doctor' as UserRole, specialization: 'Endocannabinologia' },
+    'instituicao@rootcare.com': { id: '3', name: 'Clínica Bem Estar', email: 'instituicao@rootcare.com', role: 'institution' as UserRole, institutionId: '1' },
+    'paciente@rootcare.com': { id: '4', name: 'João Silva', email: 'paciente@rootcare.com', role: 'patient' as UserRole },
+};
 
 // --- Sidebar Item ---
 const SidebarItem = ({ icon, label, active = false, onClick, hasSubmenu = false, isExpanded = false }: { icon: string, label: string, active?: boolean, onClick: () => void, hasSubmenu?: boolean, isExpanded?: boolean }) => (
@@ -452,6 +462,10 @@ const DashboardPage = ({ setActivePage }: { setActivePage: (page: Page) => void 
             <div className="space-y-8">
                 {/* Reports Summary Card (from User Image) */}
                 <div className="bg-primary p-7 rounded-2xl shadow-xl shadow-primary/20 flex flex-col justify-between items-start relative overflow-hidden group">
+                    {/* Background Image */}
+                    <div className="absolute inset-0 bg-cover bg-center opacity-15" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80')" }} />
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/95 to-primary/80" />
                     <div className="absolute right-0 top-0 size-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:scale-125 transition-all duration-700" />
                     <div className="relative z-10 w-full space-y-5">
                         <div className="flex items-center gap-3">
@@ -1640,37 +1654,65 @@ const AppointmentsPage = () => (
 );
 
 // --- Page: Login ---
-const LoginPage = ({ onLogin, onSwitchToRegister, isDarkMode }: { onLogin: () => void, onSwitchToRegister: () => void, isDarkMode: boolean }) => {
+const LoginPage = ({ onLogin, onSwitchToRegister, isDarkMode }: { onLogin: (email: string, password: string, role: UserRole) => void, onSwitchToRegister: () => void, isDarkMode: boolean }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [selectedRole, setSelectedRole] = useState<UserRole>('patient');
+    const [showPassword, setShowPassword] = useState(false);
+
+    useEffect(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+    }, []);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Simple mock login validation
-        if (email && password) {
-            onLogin();
-        } else {
-            alert('Por favor, preencha o email e a senha.');
-        }
+        onLogin(email, password, selectedRole);
     };
+
+    const handleDemoLogin = () => {
+        const credentials = {
+            patient: { email: 'paciente@rootcare.com', password: 'demo123' },
+            doctor: { email: 'medico@rootcare.com', password: 'demo123' },
+            institution: { email: 'instituicao@rootcare.com', password: 'demo123' },
+            super_admin: { email: 'admin@rootcare.com', password: 'demo123' },
+        };
+        const creds = credentials[selectedRole];
+
+        // Populate fields for visual feedback as requested
+        setEmail(creds.email);
+        setPassword(creds.password);
+
+        // Small delay to show the "filling" effect then login
+        setTimeout(() => {
+            onLogin(creds.email, creds.password, selectedRole);
+        }, 800);
+    };
+
+    const roles = [
+        { id: 'patient' as UserRole, label: 'Paciente', icon: 'person' },
+        { id: 'doctor' as UserRole, label: 'Médico', icon: 'medical_services' },
+        { id: 'institution' as UserRole, label: 'Instituição', icon: 'domain' },
+        { id: 'super_admin' as UserRole, label: 'Super Admin', icon: 'admin_panel_settings' },
+    ];
 
     return (
         <div className="flex flex-col lg:flex-row w-full min-h-screen bg-background-light dark:bg-background-dark font-display text-text-main dark:text-white transition-colors duration-200">
             {/* Left Panel - Hidden on mobile, visible on LG+ */}
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#112116]">
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-white">
                 <img
                     alt="Doctor"
-                    className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-80"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXdPRVe8aviHVjb4qqOYNPzRhQMcB-NjJf4qyx8IIQC2rkYxzL01CII380Sd4yCIAQ3uGEpRhyZHICpEO77GHqVfDVSyyX79snnhW2_g3DSy1LmTNZ4GR3COLHYe1FtOxxnNHoPuc8eKyERa4sOnNviTTYg9YAIdmQMJ5AO8SM472JqPDouRXF_ao4tLMhnFoeGCaeA_S84wJdYeoJ240IkUaAbOQDER-8CTWHr5dsji5XjrGbGhPuS51HiWNRW_UNA6MjZazTxw"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    src="/images/login-doctor.png"
                 />
-                <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#112116] via-[#112116]/40 to-transparent"></div>
-                <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#112116] via-transparent to-[#112116]/20"></div>
+                <div className="absolute inset-0 z-10 bg-gradient-to-r from-black/40 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 <div className="relative z-20 flex flex-col justify-end p-20 text-white w-full h-full">
                     <div className="flex items-center gap-3 mb-8">
                         <div className="size-12 text-primary">
                             <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                <path clip-rule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="currentColor" fill-rule="evenodd"></path>
-                                <path clip-rule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="currentColor" fill-rule="evenodd"></path>
+                                <path clipRule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="currentColor" fillRule="evenodd"></path>
+                                <path clipRule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="currentColor" fillRule="evenodd"></path>
                             </svg>
                         </div>
                         <h1 className="text-3xl font-bold tracking-tight">Rootcare</h1>
@@ -1700,20 +1742,40 @@ const LoginPage = ({ onLogin, onSwitchToRegister, isDarkMode }: { onLogin: () =>
                     <span className="text-primary font-black uppercase text-xs tracking-widest">Rootcare</span>
                 </div>
                 <div className="w-full max-w-[440px] flex flex-col">
-                    <div className="flex items-center gap-3 mb-12">
+                    <div className="flex items-center gap-3 mb-10">
                         <div className="size-10 text-primary">
                             <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                <path clip-rule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="currentColor" fill-rule="evenodd"></path>
-                                <path clip-rule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="currentColor" fill-rule="evenodd"></path>
+                                <path clipRule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="currentColor" fillRule="evenodd"></path>
+                                <path clipRule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="currentColor" fillRule="evenodd"></path>
                             </svg>
                         </div>
                         <h2 className="text-[#0e1b12] dark:text-white text-2xl font-bold tracking-tight">Rootcare</h2>
                     </div>
+
+                    {/* Role Selector */}
                     <div className="mb-8">
-                        <h1 className="text-[#0e1b12] dark:text-white text-3xl font-bold tracking-tight mb-2">Bem-vindo de volta</h1>
-                        <p className="text-gray-500 dark:text-gray-400 font-medium">Entre com suas credenciais para gerenciar seu tratamento de forma segura.</p>
+                        <label className="text-[#0e1b12] dark:text-white text-xs font-bold uppercase tracking-wider mb-4 block">Selecione seu perfil</label>
+                        <div className="grid grid-cols-4 gap-2">
+                            {roles.map((role) => (
+                                <button
+                                    key={role.id}
+                                    type="button"
+                                    onClick={() => setSelectedRole(role.id)}
+                                    className={`flex flex-col items-center gap-1.5 p-2 rounded-xl border-2 transition-all ${selectedRole === role.id ? 'border-primary bg-primary/5 text-primary' : 'border-gray-100 dark:border-white/5 text-gray-400 hover:border-gray-200 dark:hover:border-white/10'}`}
+                                >
+                                    <span className="material-symbols-outlined text-xl">{role.icon}</span>
+                                    <span className="text-[10px] font-bold leading-tight text-center">{role.label}</span>
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                    <form className="space-y-6" onSubmit={handleSubmit}>
+
+                    <div className="mb-6">
+                        <h1 className="text-[#0e1b12] dark:text-white text-3xl font-bold tracking-tight mb-2">Bem-vindo de volta</h1>
+                        <p className="text-gray-500 dark:text-gray-400 font-medium text-sm">Entre com suas credenciais para gerenciar seu tratamento.</p>
+                    </div>
+
+                    <form className="space-y-5" onSubmit={handleSubmit}>
                         <div className="flex flex-col gap-2">
                             <label className="text-[#0e1b12] dark:text-white text-sm font-medium">Email</label>
                             <div className="relative flex items-center">
@@ -1724,6 +1786,7 @@ const LoginPage = ({ onLogin, onSwitchToRegister, isDarkMode }: { onLogin: () =>
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    autoComplete="new-email"
                                     style={{
                                         WebkitBoxShadow: `0 0 0px 1000px ${isDarkMode ? '#1a2e20' : '#f1f5f9'} inset`,
                                         WebkitTextFillColor: isDarkMode ? '#fff' : '#0e1b12'
@@ -1741,23 +1804,37 @@ const LoginPage = ({ onLogin, onSwitchToRegister, isDarkMode }: { onLogin: () =>
                                 <input
                                     className="w-full pl-12 pr-12 py-4 bg-[#f1f5f9] dark:bg-[#1a2e20] border border-[#e2e8f0] dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-[#0e1b12] dark:text-white placeholder:text-gray-400"
                                     placeholder="Sua senha"
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    autoComplete="new-password"
                                     style={{
                                         WebkitBoxShadow: `0 0 0px 1000px ${isDarkMode ? '#1a2e20' : '#f1f5f9'} inset`,
                                         WebkitTextFillColor: isDarkMode ? '#fff' : '#0e1b12'
                                     }}
                                 />
-                                <button className="absolute right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" type="button">
-                                    <span className="material-symbols-outlined">visibility</span>
+                                <button
+                                    className="absolute right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    <span className="material-symbols-outlined">{showPassword ? 'visibility_off' : 'visibility'}</span>
                                 </button>
                             </div>
                         </div>
-                        <div className="pt-2">
+
+                        <div className="space-y-3 pt-2">
                             <button className="w-full bg-[#2df377] hover:bg-[#28e16d] text-background-dark font-black py-4 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98] text-lg" type="submit">
                                 <span className="truncate">Entrar</span>
                                 <span className="material-symbols-outlined text-[24px]">login</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleDemoLogin}
+                                className="w-full bg-white dark:bg-white/5 border-2 border-primary/20 hover:border-primary/50 text-text-main dark:text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                            >
+                                <span className="material-symbols-outlined text-primary">rocket_launch</span>
+                                <span>Entrar com Demonstração</span>
                             </button>
                         </div>
                     </form>
@@ -1783,14 +1860,14 @@ const RegisterPage = ({ onBackToLogin, isDarkMode }: { onBackToLogin: () => void
 
     return (
         <div className="flex min-h-screen w-full bg-white dark:bg-background-dark font-display">
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#112116]">
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-white">
                 <img
-                    alt="Smiling doctor"
-                    className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-80"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAii9FSfW08r8Zs0Jhm_7e24VC2KSeYU3knCsknNrgO4YthJBocBIbFpcRWQDpSpoECJ9P6ST4HIaibUR--s_0lFu_XmWXiuP7GoJ7I6cl1ere25wfpjbJdaC4Ir1Ttxm5i0Uf1FDHXESk7D7jgOCmo5XF0N83UmQC84ZKbfihAQ3GaKk2t-5PQkjO9JpCtrKO5aGY1LgT7AfQoKRTvqKH29MSlkvz_ZdPZo9F65vf0pi8PqEsnoOdC9KLAhwWNbSBJE1HuzvO08-g"
+                    alt="Healthcare Professional"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    src="/images/register-doctor.png"
                 />
-                <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#112116] via-[#112116]/40 to-transparent"></div>
-                <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#112116] via-transparent to-[#112116]/20"></div>
+                <div className="absolute inset-0 z-10 bg-gradient-to-r from-black/50 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
                 <div className="relative z-10 flex flex-col justify-between p-12 w-full">
                     <div className="flex items-center gap-3 text-white">
                         <div className="size-10">
@@ -2521,15 +2598,19 @@ const ProfilePage = ({ isDarkMode }: { isDarkMode: boolean }) => {
                 </div>
 
                 {/* Suporte */}
-                <div className="bg-[#112116] p-6 rounded-2xl text-white shadow-xl relative overflow-hidden group">
-                    <div className="absolute -right-8 -top-8 size-32 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/30 transition-all duration-500" />
+                <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm relative overflow-hidden group">
+                    {/* Background Image */}
+                    <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800&q=80')" }} />
+                    {/* Gradient Overlay - Bottom to Top */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-white via-white/95 to-white/70 dark:from-dark-surface dark:via-dark-surface/95 dark:to-dark-surface/70" />
+                    <div className="absolute -right-8 -top-8 size-32 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500" />
                     <div className="flex flex-col h-full relative z-10">
                         <div className="size-12 bg-primary/20 rounded-2xl flex items-center justify-center text-primary mb-6">
                             <span className="material-symbols-outlined text-2xl">support_agent</span>
                         </div>
                         <h3 className="text-lg font-black mb-2">Suporte ao Paciente</h3>
-                        <p className="text-gray-400 text-sm font-medium mb-auto">Atendimento especializado 24/7 para tirar suas dúvidas sobre o tratamento.</p>
-                        <button className="w-full mt-6 py-3 bg-primary text-white font-black rounded-xl text-sm shadow-lg shadow-primary/20 hover:brightness-105 transition-all">Iniciar Chat Agora</button>
+                        <p className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-auto">Atendimento especializado 24/7 para tirar suas dúvidas sobre o tratamento.</p>
+                        <button className="w-full mt-6 py-3 bg-primary text-[#0e1b12] font-black rounded-xl text-sm shadow-lg shadow-primary/20 hover:brightness-105 transition-all">Iniciar Chat Agora</button>
                     </div>
                 </div>
             </div>
@@ -2539,7 +2620,7 @@ const ProfilePage = ({ isDarkMode }: { isDarkMode: boolean }) => {
 
 // --- Main App ---
 export default function App() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [user, setUser] = useState<User | null>(null);
     const [authView, setAuthView] = useState<'login' | 'register'>('login');
     const [activePage, setActivePage] = useState<Page>('dashboard');
     const [selectedProduct, setSelectedProduct] = useState<any>(null);
@@ -2599,20 +2680,59 @@ export default function App() {
         setIsDarkMode(!isDarkMode);
     };
 
-    const handleLogin = () => {
-        setIsAuthenticated(true);
+    const handleLogin = (email: string, password: string, role: UserRole) => {
+        console.log('=== LOGIN DEBUG ===');
+        const foundUser = mockUsers[email as keyof typeof mockUsers];
+
+        if (!foundUser) {
+            alert(`❌ Email não encontrado!\n\nEmail demo: admin@rootcare.com, medico@rootcare.com, instituicao@rootcare.com, paciente@rootcare.com`);
+            return;
+        }
+
+        if (foundUser.role !== role) {
+            alert(`❌ Perfil incorreto!\n\nEste email é para o perfil: ${foundUser.role}`);
+            return;
+        }
+
+        if (password !== 'demo123') {
+            alert(`❌ Senha incorreta!\n\nA senha de demonstração é: demo123`);
+            return;
+        }
+
+        setUser(foundUser);
     };
 
     const handleLogout = () => {
-        setIsAuthenticated(false);
+        setUser(null);
         setAuthView('login');
+        localStorage.clear();
+        sessionStorage.clear();
     };
 
-    if (!isAuthenticated) {
+    const handlePageChange = (page: any) => {
+        console.log('Page change:', page);
+    };
+
+    if (!user) {
         return authView === 'login'
             ? <LoginPage onLogin={handleLogin} onSwitchToRegister={() => setAuthView('register')} isDarkMode={isDarkMode} />
             : <RegisterPage onBackToLogin={() => setAuthView('login')} isDarkMode={isDarkMode} />;
     }
+
+    // Role-based routing
+    if (user.role === 'super_admin') {
+        return <SuperAdminDashboard onPageChange={handlePageChange} onLogout={handleLogout} />;
+    }
+
+    if (user.role === 'doctor') {
+        return <DoctorDashboard onPageChange={handlePageChange} onLogout={handleLogout} />;
+    }
+
+    if (user.role === 'institution') {
+        return <InstitutionDashboard onPageChange={handlePageChange} onLogout={handleLogout} />;
+    }
+
+    // Default to Patient Dashboard (using the original App logic below)
 
     return (
         <div className={`flex h-screen overflow-hidden bg-background-light dark:bg-background-dark text-text-main dark:text-white font-display transition-colors duration-200`}>
