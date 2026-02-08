@@ -1,5 +1,14 @@
-// User Roles
+// --- Types ---
 export type UserRole = 'super_admin' | 'doctor' | 'institution' | 'patient';
+
+export interface CartItem {
+    name: string;
+    price: number;
+    priceString: string;
+    image: string;
+    category: string;
+    quantity: number;
+}
 
 // User Interface
 export interface User {
