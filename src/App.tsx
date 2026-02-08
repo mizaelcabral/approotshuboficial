@@ -69,11 +69,14 @@ export default function App() {
             const profile = await getProfile(data.user.id);
             if (profile) {
                 if (profile.role !== role) {
-                    alert(`❌ Perfil incorreto! Este usuário é um ${profile.role}`);
+                    alert(`❌ Perfil incorreto! Este usuário está registrado como "${profile.role}". Por favor, selecione o ícone correto no login.`);
                     await supabaseLogout();
                     return;
                 }
                 setUser(profile);
+            } else {
+                alert(`❌ Erro: Perfil não encontrado. Por favor, tente novamente ou entre em contato com o suporte.`);
+                await supabaseLogout();
             }
         }
     };

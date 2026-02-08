@@ -14,8 +14,7 @@ const LoginPage = ({ onLogin, onSwitchToRegister, isDarkMode }: LoginPageProps) 
     const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
-        localStorage.clear();
-        sessionStorage.clear();
+        // Limpeza agressiva removida para evitar problemas de persistência
     }, []);
 
     const handleSubmit = (e: React.FormEvent) => {
