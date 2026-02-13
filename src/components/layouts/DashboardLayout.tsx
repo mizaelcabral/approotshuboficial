@@ -113,13 +113,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 <div className="flex flex-col gap-8 h-full">
                     <div className="flex items-center justify-between px-2">
                         <div className="flex items-center gap-3">
-                            <div className="bg-primary/20 p-2 rounded-lg cursor-pointer" onClick={() => onTitleClick?.()}>
-                                <span className="material-symbols-outlined text-primary text-2xl font-bold">
-                                    {user.role === 'super_admin' ? 'shield_person' : user.role === 'doctor' ? 'medical_services' : 'eco'}
-                                </span>
-                            </div>
+                            <img
+                                src={isDarkMode ? "/images/rootcare-logo-fundo-escuro.png" : "/images/rootcare-logo-fundo-branco.png"}
+                                alt="Rootcare Logo"
+                                className="h-8 w-auto cursor-pointer object-contain"
+                                onClick={() => onTitleClick?.()}
+                            />
                             <div className="flex flex-col">
-                                <h1 className="text-lg font-bold uppercase tracking-wider">Rootcare</h1>
                                 <p className="text-text-muted text-[10px] font-black uppercase tracking-widest leading-none">
                                     {user.role === 'patient' ? 'Portal do Paciente' : user.role.replace('_', ' ')}
                                 </p>
@@ -189,7 +189,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                             <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -ml-2 text-gray-400 hover:text-primary transition-colors">
                                 <span className="material-symbols-outlined">menu</span>
                             </button>
-                            <h1 className="text-sm font-bold uppercase tracking-wider">Rootcare</h1>
+                            <img
+                                src={isDarkMode ? "/images/rootcare-logo-fundo-escuro.png" : "/images/rootcare-logo-fundo-branco.png"}
+                                alt="Rootcare Logo"
+                                className="h-6 w-auto object-contain"
+                            />
                         </div>
                         <h2 className="text-xl font-bold uppercase tracking-wide truncate">{title}</h2>
                         <div className="flex items-center gap-4">
