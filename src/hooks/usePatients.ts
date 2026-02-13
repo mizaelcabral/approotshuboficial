@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+import { supabase, supabaseUrl, supabaseAnonKey } from '../lib/supabase';
 import { Patient } from '../types';
 
 export const usePatients = (role?: 'doctor' | 'institution', id?: string) => {
     const [patients, setPatients] = useState<Patient[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const fetchPatients = async () => {
@@ -62,10 +63,25 @@ export const usePatients = (role?: 'doctor' | 'institution', id?: string) => {
 
     const createPatient = async (patientData: any) => {
         try {
-            // 1. Create Auth User (password defaults to cpf or a secure random one)
-            const { data: authData, error: authError } = await supabase.auth.signUp({
+            setLoading(true);
+            setError(null);
+
+            // Simulation for demo users
+            if (patientData.institution_id && patientData.institution_id.startsWith('demo-')) {
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                return { id: 'demo-new-patient-' + Math.random(), ...patientData };
+            }
+
+            // Create a temporary client that doesn't persist the session
+            // This prevents the institution from being logged out when creating a patient
+            const tempClient = createClient(supabaseUrl, supabaseAnonKey, {
+                auth: { persistSession: false }
+            });
+
+            // 1. Create Auth User (password defaults to cpf)
+            const { data: authData, error: authError } = await tempClient.auth.signUp({
                 email: patientData.email,
-                password: patientData.password || patientData.cpf, // Usage of CPF as temp password
+                password: patientData.password || patientData.cpf,
                 options: {
                     data: {
                         name: patientData.name,
@@ -75,6 +91,7 @@ export const usePatients = (role?: 'doctor' | 'institution', id?: string) => {
             });
 
             if (authError) throw authError;
+            if (!authData.user) throw new Error("Não foi possível criar as credenciais do paciente. Verifique se o e-mail já está em uso.");
 
             // 2. Profile is created via Trigger, but we update the extra fields
             if (authData.user) {
@@ -102,6 +119,8 @@ export const usePatients = (role?: 'doctor' | 'institution', id?: string) => {
         } catch (e: any) {
             setError(e.message);
             throw e;
+        } finally {
+            setLoading(false);
         }
     };
 

@@ -11,6 +11,35 @@ export const useDoctors = (institutionId?: string) => {
         const fetchDoctors = async () => {
             try {
                 setLoading(true);
+
+                // Simulation for demo
+                if (institutionId && institutionId.startsWith('demo-')) {
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                    setDoctors([
+                        {
+                            id: 'demo-doc-1',
+                            name: 'Dr. Mizael Cabral',
+                            email: 'mizael@demo.com',
+                            specialization: 'Clínico Geral',
+                            patients: 45,
+                            institutionIds: [institutionId],
+                            rating: 4.9,
+                            availability: []
+                        },
+                        {
+                            id: 'demo-doc-2',
+                            name: 'Dra. Ana Silva',
+                            email: 'ana@demo.com',
+                            specialization: 'Neurologista',
+                            patients: 32,
+                            institutionIds: [institutionId],
+                            rating: 4.8,
+                            availability: []
+                        }
+                    ]);
+                    return;
+                }
+
                 let query = supabase
                     .from('profiles')
                     .select('*')
@@ -29,7 +58,7 @@ export const useDoctors = (institutionId?: string) => {
                     name: d.name || 'Sem nome',
                     email: d.email || '',
                     specialization: d.specialization || 'Geral',
-                    patients: 0, // Should be fetched from patient count
+                    patients: 0,
                     institutionIds: [d.institution_id || ''],
                     avatar: d.avatar_url,
                     rating: 5.0,

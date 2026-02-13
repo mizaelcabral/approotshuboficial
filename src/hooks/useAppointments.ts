@@ -17,7 +17,7 @@ export interface Appointment {
 
 export const useAppointments = (role?: 'patient' | 'doctor' | 'institution', id?: string) => {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const fetchAppointments = async () => {
@@ -65,6 +65,18 @@ export const useAppointments = (role?: 'patient' | 'doctor' | 'institution', id?
 
     const createAppointment = async (appointmentData: Omit<Appointment, 'id' | 'created_at' | 'status'>) => {
         try {
+            if (appointmentData.patient_id.startsWith('demo-') || appointmentData.doctor_id.startsWith('demo-')) {
+                // Simulate success for demo
+                const demoData = {
+                    id: 'demo-app-' + Math.random(),
+                    ...appointmentData,
+                    status: 'pending' as const,
+                    created_at: new Date().toISOString()
+                };
+                setAppointments(prev => [...prev, demoData as Appointment]);
+                return demoData;
+            }
+
             const { data, error: err } = await supabase
                 .from('appointments')
                 .insert([{ ...appointmentData, status: 'pending' }])
