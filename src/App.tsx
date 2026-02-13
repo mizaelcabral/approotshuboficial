@@ -55,6 +55,25 @@ export default function App() {
     }, []);
 
     const handleLogin = async (email: string, password: string, role: UserRole) => {
+        // Demo access bypass
+        const demoCredentials: Record<string, string> = {
+            'paciente@rootcare.com': 'demo123',
+            'medico@rootcare.com': 'demo123',
+            'instituicao@rootcare.com': 'demo123',
+            'admin@rootcare.com': 'demo123'
+        };
+
+        if (demoCredentials[email] === password) {
+            const mockUser: User = {
+                id: 'demo-uuid-' + role,
+                name: `Demo ${role.charAt(0).toUpperCase() + role.slice(1)}`,
+                email: email,
+                role: role
+            };
+            setUser(mockUser);
+            return;
+        }
+
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password
@@ -93,22 +112,25 @@ export default function App() {
         console.log('Page change tracking:', page);
     };
 
+    const toggleDarkMode = () => setIsDarkMode(prev => !prev);
+
     if (!user) {
         return authView === 'login'
-            ? <LoginPage onLogin={handleLogin} onSwitchToRegister={() => setAuthView('register')} isDarkMode={isDarkMode} />
-            : <RegisterPage onBackToLogin={() => setAuthView('login')} isDarkMode={isDarkMode} />;
+            ? <LoginPage onLogin={handleLogin} onSwitchToRegister={() => setAuthView('register')} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
+            : <RegisterPage onBackToLogin={() => setAuthView('login')} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />;
     }
 
     // Role-based routing
     switch (user.role) {
         case 'super_admin':
-            return <SuperAdminDashboard onPageChange={handlePageChange} onLogout={handleLogout} />;
+            return <SuperAdminDashboard user={user} onPageChange={handlePageChange} onLogout={handleLogout} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />;
         case 'doctor':
-            return <DoctorDashboard onPageChange={handlePageChange} onLogout={handleLogout} />;
+            return <DoctorDashboard user={user} onPageChange={handlePageChange} onLogout={handleLogout} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />;
         case 'institution':
-            return <InstitutionDashboard onPageChange={handlePageChange} onLogout={handleLogout} />;
+            return <InstitutionDashboard user={user} onPageChange={handlePageChange} onLogout={handleLogout} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />;
         case 'patient':
-            return <PatientDashboard user={user} onLogout={handleLogout} isDarkMode={isDarkMode} />;
+            return <PatientDashboard user={user} onLogout={handleLogout} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />;
+
         default:
             return (
                 <div className="flex items-center justify-center h-screen bg-background-light dark:bg-background-dark">

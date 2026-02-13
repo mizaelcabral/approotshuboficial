@@ -195,6 +195,8 @@ export type DoctorPage =
     | 'doc_patients'
     | 'doc_appointments'
     | 'doc_reports'
+    | 'doc_reports_pending'
+    | 'doc_reports_history'
     | 'doc_patient_detail'
     | 'doc_profile';
 

@@ -78,6 +78,8 @@ interface DashboardLayoutProps {
     statusLabel?: string;
     statusDetail?: string;
     onTitleClick?: () => void;
+    isDarkMode: boolean;
+    onToggleDarkMode: () => void;
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -91,19 +93,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     title,
     statusLabel = 'Sistema Operacional',
     statusDetail = 'Conexão Segura',
-    onTitleClick
+    onTitleClick,
+    isDarkMode,
+    onToggleDarkMode
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-    // Dark Mode Sync
-    const [isDarkMode, setIsDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
-    useEffect(() => {
-        const observer = new MutationObserver(() => {
-            setIsDarkMode(document.documentElement.classList.contains('dark'));
-        });
-        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-        return () => observer.disconnect();
-    }, []);
 
     const isActive = (item: SidebarItemData) => {
         if (item.id === activePage) return true;
@@ -203,6 +197,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                                 <span className="text-[10px] font-bold text-primary uppercase leading-none">{statusLabel}</span>
                                 <span className="text-xs font-bold text-green-600 leading-none mt-1">{statusDetail}</span>
                             </div>
+                            <button
+                                onClick={onToggleDarkMode}
+                                className="size-10 rounded-xl bg-background-light dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center hover:bg-primary/10 transition-colors"
+                            >
+                                <span className="material-symbols-outlined text-xl">
+                                    {isDarkMode ? 'light_mode' : 'dark_mode'}
+                                </span>
+                            </button>
                             <button className="size-10 rounded-xl bg-background-light dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center hover:bg-primary/10 transition-colors">
                                 <span className="material-symbols-outlined text-xl">notifications</span>
                             </button>

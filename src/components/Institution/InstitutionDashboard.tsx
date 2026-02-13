@@ -1,41 +1,41 @@
 import React, { useState } from 'react';
-import { InstitutionPage, Patient } from '../../types';
+import { InstitutionPage, Patient, User } from '../../types';
 import DashboardLayout from '../layouts/DashboardLayout';
 import InstitutionDashboardPage from '../../pages/institution/Dashboard';
+import PatientsPage from '../../pages/institution/Patients';
+import DoctorsPage from '../../pages/institution/Doctors';
+import ReportsPage from '../../pages/institution/Reports';
+import ProfilePage from '../../pages/institution/Profile';
+import PatientRegistrationForm from './PatientRegistrationForm';
 import Modal from '../common/Modal';
+import { usePatients } from '../../hooks/usePatients';
 
 interface InstitutionDashboardProps {
+    user: User;
     onPageChange: (page: InstitutionPage) => void;
     onLogout: () => void;
+    isDarkMode: boolean;
+    onToggleDarkMode: () => void;
 }
 
-const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onPageChange, onLogout }) => {
+import PatientMedicalRecord from '../../pages/institution/PatientMedicalRecord';
+
+const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ user, onPageChange, onLogout, isDarkMode, onToggleDarkMode }) => {
     const [activePage, setActivePage] = useState<InstitutionPage>('inst_dashboard');
     const [showRegisterModal, setShowRegisterModal] = useState(false);
+    const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+    const { refresh } = usePatients('institution', user.id);
 
     const handlePageChange = (page: InstitutionPage) => {
+        setSelectedPatientId(null);
         setActivePage(page);
         onPageChange(page);
     };
 
-    // User data
-    const user = {
-        id: 'inst-id',
-        name: 'Clínica Bem Estar',
-        email: 'clinica@bemestar.com',
-        role: 'institution' as const
-    };
-
-    // Mock data
-    const patients: Patient[] = [
-        { id: '1', name: 'João Silva', email: 'joao@email.com', phone: '(11) 98765-4321', institutionId: '1', institutionName: 'Clínica Bem Estar', doctorName: 'Dr. Carlos', status: 'active', treatmentProgress: 65, financialStatus: 'regular', registrationDate: '2024-01-15' },
-        { id: '2', name: 'Maria Santos', email: 'maria@email.com', phone: '(11) 98765-4322', institutionId: '1', institutionName: 'Clínica Bem Estar', doctorName: 'Dra. Ana', status: 'active', treatmentProgress: 80, financialStatus: 'regular', registrationDate: '2024-01-20' },
-        { id: '3', name: 'Pedro Costa', email: 'pedro@email.com', phone: '(11) 98765-4323', institutionId: '1', institutionName: 'Clínica Bem Estar', status: 'pending', treatmentProgress: 0, financialStatus: 'pending', registrationDate: '2024-02-01' },
-    ];
-
+    // Stats for Dashboard Page
     const stats = [
-        { label: 'Total Pacientes', value: patients.length, icon: 'group', color: 'purple' },
-        { label: 'Em Tratamento', value: patients.filter(p => p.status === 'active').length, icon: 'local_hospital', color: 'primary' },
+        { label: 'Total Pacientes', value: '...', icon: 'group', color: 'purple' },
+        { label: 'Em Tratamento', value: '...', icon: 'local_hospital', color: 'primary' },
         { label: 'Receita Est.', value: 'R$ 42k', icon: 'payments', color: 'blue' },
         { label: 'NPS Clínica', value: '4.9', icon: 'star', color: 'amber' },
     ];
@@ -58,6 +58,43 @@ const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onPageChang
         },
     ];
 
+    const renderContent = () => {
+        if (selectedPatientId) {
+            return (
+                <PatientMedicalRecord
+                    patientId={selectedPatientId}
+                    onBack={() => setSelectedPatientId(null)}
+                />
+            );
+        }
+
+        switch (activePage) {
+            case 'inst_dashboard':
+                return (
+                    <InstitutionDashboardPage
+                        stats={stats}
+                        patients={[]}
+                        onManageList={() => handlePageChange('inst_patients')}
+                    />
+                );
+            case 'inst_patients':
+                return (
+                    <PatientsPage
+                        institutionId={user.id}
+                        onViewRecord={(id) => setSelectedPatientId(id)}
+                    />
+                );
+            case 'inst_doctors':
+                return <DoctorsPage institutionId={user.id} />;
+            case 'inst_reports':
+                return <ReportsPage />;
+            case 'inst_profile':
+                return <ProfilePage />;
+            default:
+                return null;
+        }
+    };
+
     return (
         <>
             <DashboardLayout
@@ -67,6 +104,8 @@ const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onPageChang
                 onLogout={onLogout}
                 sidebarItems={sidebarItems}
                 infoCards={infoCards}
+                isDarkMode={isDarkMode}
+                onToggleDarkMode={onToggleDarkMode}
                 title={
                     activePage === 'inst_dashboard' ? 'Painel da Instituição' :
                         activePage === 'inst_patients' ? 'Gestão de Pacientes' :
@@ -80,44 +119,34 @@ const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ onPageChang
                 <div className="flex flex-col gap-8">
                     {activePage === 'inst_dashboard' && (
                         <div className="flex justify-end -mb-4">
-                            <button onClick={() => setShowRegisterModal(true)} className="flex items-center gap-2 px-6 py-3 bg-primary text-background-dark rounded-xl font-black text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/20">
+                            <button
+                                onClick={() => setShowRegisterModal(true)}
+                                className="flex items-center gap-2 px-6 py-3 bg-primary text-background-dark rounded-xl font-black text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/20"
+                            >
                                 <span className="material-symbols-outlined">person_add</span>
                                 Novo Paciente
                             </button>
                         </div>
                     )}
-
-                    {activePage === 'inst_dashboard' ? (
-                        <InstitutionDashboardPage
-                            stats={stats}
-                            patients={patients}
-                            onManageList={() => handlePageChange('inst_patients')}
-                        />
-                    ) : (
-                        <div className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 p-20 rounded-2xl text-center">
-                            <span className="material-symbols-outlined text-6xl text-primary/20 mb-4 italic">architecture</span>
-                            <h3 className="text-xl font-black">Em Atualização Visual</h3>
-                            <p className="text-text-subtle mt-2">Esta tela está sendo adaptada para o novo padrão de design premium.</p>
-                            <button onClick={() => handlePageChange('inst_dashboard')} className="mt-6 px-6 py-3 bg-primary text-background-dark rounded-xl font-black text-sm uppercase">Ir para Resumo</button>
-                        </div>
-                    )}
+                    {renderContent()}
                 </div>
             </DashboardLayout>
 
             <Modal
                 isOpen={showRegisterModal}
                 onClose={() => setShowRegisterModal(false)}
-                title="Cadastro de Paciente"
-                subtitle="Preencha os dados básicos para iniciar o prontuário."
+                title="Cadastro de Novo Paciente"
+                subtitle="Siga as etapas para registrar o paciente e agendar a primeira consulta."
+                size="large"
             >
-                <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-                    <input className="w-full px-5 py-4 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl outline-none focus:ring-2 focus:ring-primary font-bold text-sm" placeholder="Nome Completo" />
-                    <input className="w-full px-5 py-4 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl outline-none focus:ring-2 focus:ring-primary font-bold text-sm" placeholder="E-mail" />
-                    <div className="flex gap-4">
-                        <button type="button" onClick={() => setShowRegisterModal(false)} className="flex-1 py-4 bg-gray-100 dark:bg-white/5 rounded-2xl font-black text-sm transition-all hover:bg-gray-200">Cancelar</button>
-                        <button type="submit" className="flex-1 py-4 bg-primary text-background-dark rounded-2xl font-black text-sm shadow-xl shadow-primary/20 hover:brightness-110">Cadastrar</button>
-                    </div>
-                </form>
+                <PatientRegistrationForm
+                    institutionId={user.id}
+                    onSuccess={() => {
+                        setShowRegisterModal(false);
+                        refresh();
+                    }}
+                    onCancel={() => setShowRegisterModal(false)}
+                />
             </Modal>
         </>
     );

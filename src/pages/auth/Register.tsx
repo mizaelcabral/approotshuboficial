@@ -5,9 +5,10 @@ import { UserRole } from '../../types';
 interface RegisterPageProps {
     onBackToLogin: () => void;
     isDarkMode: boolean;
+    onToggleDarkMode: () => void;
 }
 
-const RegisterPage = ({ onBackToLogin, isDarkMode }: RegisterPageProps) => {
+const RegisterPage = ({ onBackToLogin, isDarkMode, onToggleDarkMode }: RegisterPageProps) => {
     const [step, setStep] = useState(1);
     const [userType, setUserType] = useState<UserRole>('patient');
     const [fullname, setFullname] = useState('');
@@ -75,7 +76,19 @@ const RegisterPage = ({ onBackToLogin, isDarkMode }: RegisterPageProps) => {
                     </div>
                 </div>
             </div>
-            <div className="w-full lg:w-1/2 flex flex-col bg-white dark:bg-background-dark overflow-y-auto scrollbar-hide">
+            <div className="w-full lg:w-1/2 flex flex-col bg-white dark:bg-background-dark overflow-y-auto scrollbar-hide relative">
+                {/* Theme Toggle Top Right */}
+                <div className="absolute top-6 right-6 z-20">
+                    <button
+                        onClick={onToggleDarkMode}
+                        className="size-10 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center hover:bg-primary/10 transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-xl">
+                            {isDarkMode ? 'light_mode' : 'dark_mode'}
+                        </span>
+                    </button>
+                </div>
+
                 <div className="max-w-[540px] w-full mx-auto px-6 py-12 lg:py-16 flex flex-col h-full">
                     {step < 3 && (
                         <>

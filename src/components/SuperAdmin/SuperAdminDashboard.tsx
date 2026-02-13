@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { SuperAdminPage, Institution } from '../../types';
+import { SuperAdminPage, Institution, User } from '../../types';
 import DashboardLayout from '../layouts/DashboardLayout';
 import AdminDashboardPage from '../../pages/admin/Dashboard';
 
 interface SuperAdminDashboardProps {
+    user: User;
     onPageChange: (page: SuperAdminPage) => void;
     onLogout: () => void;
+    isDarkMode: boolean;
+    onToggleDarkMode: () => void;
 }
 
-const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onPageChange, onLogout }) => {
+const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ user, onPageChange, onLogout, isDarkMode, onToggleDarkMode }) => {
     const [activePage, setActivePage] = useState<SuperAdminPage>('sa_dashboard');
 
     const handlePageChange = (page: SuperAdminPage) => {
@@ -16,13 +19,7 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onPageChange,
         onPageChange(page);
     };
 
-    // User data (this would come from Supabase context eventually)
-    const user = {
-        id: 'admin-id',
-        name: 'Administrador Root',
-        email: 'admin@rootcare.com',
-        role: 'super_admin' as const
-    };
+    // Remove the mock user that was here
 
     // Mock data for institutions
     const institutions: Institution[] = [
@@ -56,6 +53,8 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onPageChange,
             onPageChange={(p) => handlePageChange(p as SuperAdminPage)}
             onLogout={onLogout}
             sidebarItems={sidebarItems}
+            isDarkMode={isDarkMode}
+            onToggleDarkMode={onToggleDarkMode}
             title="Painel de Controle Nacional"
             statusLabel="Status: Blindado"
         >

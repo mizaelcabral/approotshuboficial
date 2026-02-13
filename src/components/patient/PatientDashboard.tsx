@@ -20,9 +20,10 @@ interface PatientDashboardProps {
     user: User;
     onLogout: () => void;
     isDarkMode: boolean;
+    onToggleDarkMode: () => void;
 }
 
-const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, isDarkMode }) => {
+const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, isDarkMode, onToggleDarkMode }) => {
     const [activePage, setActivePage] = useState<Page>('dashboard');
     const [selectedProduct, setSelectedProduct] = useState<any>(null);
     const [cart, setCart] = useState<CartItem[]>([]);
@@ -143,6 +144,8 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, isD
                 onLogout={onLogout}
                 sidebarItems={sidebarItems}
                 infoCards={infoCards}
+                isDarkMode={isDarkMode}
+                onToggleDarkMode={onToggleDarkMode}
                 title={getTitle()}
                 statusLabel="Status Financeiro"
                 statusDetail="Regular"
@@ -191,7 +194,7 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, isD
                             <SuccessPage onHome={() => setActivePage('dashboard')} />
                         )}
                         {activePage === 'orders' && <OrdersPage />}
-                        {activePage === 'appointments' && <AppointmentsPage />}
+                        {activePage === 'appointments' && <AppointmentsPage user={user} />}
                         {activePage === 'professionals' && <ProfessionalsPage />}
                         {activePage === 'addresses' && <AddressesPage />}
                         {activePage === 'reports' && <PatientReportsPage />}
@@ -217,8 +220,8 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, isD
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.9 }}
                         className={`fixed bottom-24 lg:bottom-8 right-8 z-[100] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border ${toast.type === 'success'
-                                ? 'bg-[#0e1b12] dark:bg-primary border-primary/20 text-white dark:text-[#0e1b12]'
-                                : 'bg-red-600 border-red-500/20 text-white'
+                            ? 'bg-[#0e1b12] dark:bg-primary border-primary/20 text-white dark:text-[#0e1b12]'
+                            : 'bg-red-600 border-red-500/20 text-white'
                             }`}
                     >
                         <span className="material-symbols-outlined">

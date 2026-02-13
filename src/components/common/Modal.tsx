@@ -7,9 +7,15 @@ interface ModalProps {
     title: string;
     subtitle?: string;
     children: React.ReactNode;
+    size?: 'medium' | 'large' | 'xl';
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, subtitle, children }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, subtitle, children, size = 'medium' }) => {
+    const maxWidthClass = {
+        medium: 'max-w-xl',
+        large: 'max-w-3xl',
+        xl: 'max-w-5xl'
+    }[size];
     return (
         <AnimatePresence>
             {isOpen && (
@@ -18,7 +24,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, subtitle, childre
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="bg-white dark:bg-[#112116] rounded-3xl p-8 max-w-xl w-full border border-gray-200 dark:border-white/10 shadow-2xl relative overflow-hidden"
+                        className={`bg-white dark:bg-[#112116] rounded-3xl p-8 ${maxWidthClass} w-full border border-gray-200 dark:border-white/10 shadow-2xl relative overflow-hidden`}
                     >
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl pointer-events-none" />
 

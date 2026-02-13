@@ -5,9 +5,10 @@ interface LoginPageProps {
     onLogin: (email: string, password: string, role: UserRole) => void;
     onSwitchToRegister: () => void;
     isDarkMode: boolean;
+    onToggleDarkMode: () => void;
 }
 
-const LoginPage = ({ onLogin, onSwitchToRegister, isDarkMode }: LoginPageProps) => {
+const LoginPage = ({ onLogin, onSwitchToRegister, isDarkMode, onToggleDarkMode }: LoginPageProps) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [selectedRole, setSelectedRole] = useState<UserRole>('patient');
@@ -85,7 +86,19 @@ const LoginPage = ({ onLogin, onSwitchToRegister, isDarkMode }: LoginPageProps) 
             </div>
 
             {/* Right Panel - Form */}
-            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-4 py-8 md:px-6 md:py-12 bg-white dark:bg-background-dark">
+            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-4 py-8 md:px-6 md:py-12 bg-white dark:bg-background-dark relative">
+                {/* Theme Toggle Top Right */}
+                <div className="absolute top-6 right-6">
+                    <button
+                        onClick={onToggleDarkMode}
+                        className="size-10 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center hover:bg-primary/10 transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-xl">
+                            {isDarkMode ? 'light_mode' : 'dark_mode'}
+                        </span>
+                    </button>
+                </div>
+
                 {/* Mobile Header */}
                 <div className="lg:hidden flex items-center gap-2 mb-8 bg-primary/10 px-4 py-2 rounded-full border border-primary/20">
                     <span className="material-symbols-outlined text-primary font-bold">eco</span>
