@@ -194,12 +194,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                                 alt="Rootcare Logo"
                                 className="h-6 w-auto object-contain"
                             />
+                            <div className="h-4 w-px bg-gray-200 dark:bg-white/10 mx-1"></div>
+                            <span className="text-xs font-black text-primary uppercase tracking-wider truncate max-w-[120px]">{title}</span>
                         </div>
-                        <h2 className="text-xl font-bold uppercase tracking-wide truncate">{title}</h2>
                         <div className="flex items-center gap-4">
                             <div className="hidden sm:flex flex-col items-end">
-                                <span className="text-[10px] font-bold text-primary uppercase leading-none">{statusLabel}</span>
-                                <span className="text-xs font-bold text-green-600 leading-none mt-1">{statusDetail}</span>
+                                <span className="text-[10px] font-black text-text-subtle uppercase tracking-widest leading-none">Você está em:</span>
+                                <span className="text-sm font-black text-primary uppercase tracking-wider leading-none mt-1.5">{title}</span>
                             </div>
                             <button
                                 onClick={onToggleDarkMode}
