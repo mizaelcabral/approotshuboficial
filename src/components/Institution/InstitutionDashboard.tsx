@@ -24,6 +24,7 @@ const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ user, onPag
     const [activePage, setActivePage] = useState<InstitutionPage>('inst_dashboard');
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+    const [copied, setCopied] = useState(false);
     const { refresh } = usePatients('institution', user.id);
 
     const handlePageChange = (page: InstitutionPage) => {
@@ -89,7 +90,7 @@ const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ user, onPag
             case 'inst_reports':
                 return <ReportsPage />;
             case 'inst_profile':
-                return <ProfilePage />;
+                return <ProfilePage user={user} />;
             default:
                 return null;
         }
@@ -118,7 +119,26 @@ const InstitutionDashboard: React.FC<InstitutionDashboardProps> = ({ user, onPag
             >
                 <div className="flex flex-col gap-8">
                     {activePage === 'inst_dashboard' && (
-                        <div className="flex justify-end -mb-4">
+                        <div className="flex justify-end items-center gap-4 -mb-4">
+                            <button
+                                onClick={() => {
+                                    const slug = user.slug || user.name.toLowerCase().replace(/\s+/g, '-');
+                                    const url = `${window.location.origin}/${slug}`;
+                                    navigator.clipboard.writeText(url);
+                                    setCopied(true);
+                                    setTimeout(() => setCopied(false), 2000);
+                                }}
+                                className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all shadow-sm ${copied
+                                    ? 'bg-green-500 text-white border-transparent'
+                                    : 'bg-white dark:bg-white/5 text-text-main dark:text-white border border-gray-100 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/10'
+                                    }`}
+                            >
+                                <span className="material-symbols-outlined">
+                                    {copied ? 'check' : 'link'}
+                                </span>
+                                {copied ? 'Copiado!' : 'Link de Cadastro'}
+                            </button>
+
                             <button
                                 onClick={() => setShowRegisterModal(true)}
                                 className="flex items-center gap-2 px-6 py-3 bg-primary text-background-dark rounded-xl font-black text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/20"

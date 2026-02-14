@@ -19,6 +19,7 @@ export interface User {
     avatar?: string;
     institutionId?: string;
     specialization?: string; // For doctors
+    slug?: string;
 }
 
 // Authentication

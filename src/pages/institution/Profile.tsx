@@ -1,6 +1,6 @@
-import React from 'react';
+import { User } from '../../types';
 
-const ProfilePage = () => {
+const ProfilePage = ({ user }: { user: User }) => {
     return (
         <div className="max-w-4xl space-y-8 pb-12">
             {/* Institution Header */}
@@ -39,6 +39,32 @@ const ProfilePage = () => {
                 <div className="space-y-6">
                     <h3 className="text-lg font-black px-2 uppercase tracking-wide">Gestão da Unidade</h3>
                     <div className="bg-white dark:bg-dark-surface rounded-2xl border border-gray-100 dark:border-white/10 overflow-hidden">
+                        {/* Public Link Section */}
+                        <div className="p-5 bg-primary/5 border-b border-gray-100 dark:border-white/5">
+                            <div className="flex items-center gap-3 mb-3">
+                                <span className="material-symbols-outlined text-primary">link</span>
+                                <p className="text-sm font-bold">Link de Cadastro Público</p>
+                            </div>
+                            <div className="flex gap-2">
+                                <div className="flex-1 bg-white dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-[10px] font-mono text-text-subtle truncate flex items-center">
+                                    {window.location.origin}/{user.slug || user.name.toLowerCase().replace(/\s+/g, '-')}
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        const slug = user.slug || user.name.toLowerCase().replace(/\s+/g, '-');
+                                        const url = `${window.location.origin}/${slug}`;
+                                        navigator.clipboard.writeText(url);
+                                        alert('Link copiado!');
+                                    }}
+                                    className="px-3 py-2 bg-primary text-background-dark rounded-lg text-[10px] font-black uppercase tracking-wider hover:brightness-110"
+                                >
+                                    Copiar
+                                </button>
+                            </div>
+                            <p className="mt-3 text-[10px] text-text-subtle leading-relaxed">
+                                Compartilhe este link com seus pacientes para que eles se cadastrem diretamente vinculados à sua clínica.
+                            </p>
+                        </div>
                         <button className="w-full flex items-center justify-between p-5 hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-left group">
                             <div className="flex items-center gap-4">
                                 <div className="size-10 rounded-xl bg-blue-50 dark:bg-blue-900/10 flex items-center justify-center text-blue-500">

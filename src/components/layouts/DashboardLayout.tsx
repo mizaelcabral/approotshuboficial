@@ -119,11 +119,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                                 className="h-8 w-auto cursor-pointer object-contain"
                                 onClick={() => onTitleClick?.()}
                             />
-                            <div className="flex flex-col">
-                                <p className="text-text-muted text-[10px] font-black uppercase tracking-widest leading-none">
-                                    {user.role === 'patient' ? 'Portal do Paciente' : user.role.replace('_', ' ')}
-                                </p>
-                            </div>
                         </div>
                     </div>
 
@@ -194,13 +189,17 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                                 alt="Rootcare Logo"
                                 className="h-6 w-auto object-contain"
                             />
-                            <div className="h-4 w-px bg-gray-200 dark:bg-white/10 mx-1"></div>
-                            <span className="text-xs font-black text-primary uppercase tracking-wider truncate max-w-[120px]">{title}</span>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-subtle mb-1 leading-none">
+                                {user.role === 'patient' ? 'Portal do Paciente' : user.role.replace('_', ' ')}
+                            </span>
+                            <h2 className="text-xl font-bold uppercase tracking-wide truncate">{title}</h2>
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="hidden sm:flex flex-col items-end">
-                                <span className="text-[10px] font-black text-text-subtle uppercase tracking-widest leading-none">Você está em:</span>
-                                <span className="text-sm font-black text-primary uppercase tracking-wider leading-none mt-1.5">{title}</span>
+                                <span className="text-[10px] font-bold text-primary uppercase leading-none">{statusLabel}</span>
+                                <span className="text-xs font-bold text-green-600 leading-none mt-1">{statusDetail}</span>
                             </div>
                             <button
                                 onClick={onToggleDarkMode}

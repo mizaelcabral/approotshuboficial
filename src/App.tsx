@@ -7,11 +7,14 @@ import PatientDashboard from './components/patient/PatientDashboard';
 import LoginPage from './pages/auth/Login';
 import RegisterPage from './pages/auth/Register';
 import { supabase } from './lib/supabase';
-import { getProfile, logout as supabaseLogout } from './lib/auth';
+import { getProfile, logout as supabaseLogout, getInstitutionBySlug } from './lib/auth';
+import InstitutionLandingPage from './pages/public/InstitutionLandingPage';
 
 export default function App() {
     const [user, setUser] = useState<User | null>(null);
     const [authView, setAuthView] = useState<'login' | 'register'>('login');
+    const [publicInstitution, setPublicInstitution] = useState<User | null>(null);
+    const [isLoadingPath, setIsLoadingPath] = useState(true);
     const [isDarkMode, setIsDarkMode] = useState(() => {
         const saved = localStorage.getItem('theme');
         if (saved) return saved === 'dark';
@@ -52,6 +55,20 @@ export default function App() {
         });
 
         return () => subscription.unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        const checkPublicPath = async () => {
+            const path = window.location.pathname.split('/').filter(Boolean)[0];
+            if (path && path !== 'login' && path !== 'register') {
+                const inst = await getInstitutionBySlug(path);
+                if (inst) {
+                    setPublicInstitution(inst);
+                }
+            }
+            setIsLoadingPath(false);
+        };
+        checkPublicPath();
     }, []);
 
     const handleLogin = async (email: string, password: string, role: UserRole) => {
@@ -114,7 +131,25 @@ export default function App() {
 
     const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
+    if (isLoadingPath) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-background-light dark:bg-background-dark">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
+
     if (!user) {
+        if (publicInstitution) {
+            return (
+                <InstitutionLandingPage
+                    institution={publicInstitution}
+                    isDarkMode={isDarkMode}
+                    onToggleDarkMode={toggleDarkMode}
+                />
+            );
+        }
+
         return authView === 'login'
             ? <LoginPage onLogin={handleLogin} onSwitchToRegister={() => setAuthView('register')} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
             : <RegisterPage onBackToLogin={() => setAuthView('login')} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />;
