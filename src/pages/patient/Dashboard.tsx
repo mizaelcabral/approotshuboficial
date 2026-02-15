@@ -8,10 +8,10 @@ interface DashboardPageProps {
 const DashboardPage = ({ setActivePage }: DashboardPageProps) => (
     <div className="space-y-8 pb-12">
         {/* Welcome Section */}
-        <header className="flex flex-wrap justify-between items-center gap-4">
+        <header className="flex flex-wrap justify-between items-center gap-4 py-2">
             <div className="space-y-1">
                 <h2 className="text-xl md:text-3xl font-black tracking-tight dark:text-white leading-tight">Olá, João Silva</h2>
-                <p className="text-[#4e9767] text-sm md:text-base font-medium">Seu resumo de hoje, 31 de Janeiro.</p>
+                <p className="text-[#4e9767] text-sm md:text-base font-bold">Seu resumo de hoje, 31 de Janeiro.</p>
             </div>
             <div className="flex items-center gap-6">
                 <div className="hidden sm:flex flex-col items-end">

@@ -14,11 +14,11 @@ interface SidebarItemProps {
 const SidebarItem: React.FC<SidebarItemProps> = ({ icon, label, active = false, onClick, hasSubmenu = false, isExpanded = false }) => (
     <button
         onClick={onClick}
-        className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 group ${active ? 'bg-primary text-background-dark shadow-lg shadow-primary/20' : 'text-text-subtle hover:bg-primary/10 hover:text-primary'}`}
+        className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all duration-300 group ${active ? 'bg-primary text-[#0e1b12] shadow-xl shadow-primary/25 scale-[1.02]' : 'text-text-subtle hover:bg-primary/10 hover:text-primary'}`}
     >
         <div className="flex items-center gap-3">
-            <span className={`material-symbols-outlined transition-colors ${active ? 'text-background-dark font-bold' : 'text-gray-400 group-hover:text-primary'}`}>{icon}</span>
-            <span className={`text-sm font-bold tracking-tight ${active ? 'text-background-dark' : 'text-text-main dark:text-gray-300'}`}>{label}</span>
+            <span className={`material-symbols-outlined transition-colors ${active ? 'text-[#0e1b12] font-black' : 'text-gray-400 group-hover:text-primary'}`}>{icon}</span>
+            <span className={`text-sm font-black tracking-tight ${active ? 'text-[#0e1b12]' : 'text-text-main dark:text-gray-300'}`}>{label}</span>
         </div>
         {hasSubmenu && (
             <span className={`material-symbols-outlined text-sm transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''} ${active ? 'text-background-dark' : 'text-gray-400'}`}>expand_more</span>
@@ -191,10 +191,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                             />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-subtle mb-1 leading-none">
-                                {user.role === 'patient' ? 'Portal do Paciente' : user.role.replace('_', ' ')}
-                            </span>
-                            <h2 className="text-xl font-bold uppercase tracking-wide truncate">{title}</h2>
+                            <h2 className="text-2xl font-black uppercase tracking-tight truncate dark:text-white">{title}</h2>
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="hidden sm:flex flex-col items-end">

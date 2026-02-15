@@ -7,9 +7,8 @@ const PatientReportsPage = () => {
     return (
         <div className="space-y-8 pb-20 md:pb-0">
             <header className="flex flex-wrap justify-between items-start gap-4">
-                <div className="space-y-1">
-                    <h2 className="text-3xl font-black tracking-tight dark:text-white">Relatos do Paciente</h2>
-                    <p className="text-[#4e9767] text-base">Acompanhe seu tratamento e compartilhe seu progresso.</p>
+                <div className="space-y-1 py-1">
+                    <p className="text-[#4e9767] text-base font-bold">Acompanhe seu tratamento e compartilhe seu progresso.</p>
                 </div>
                 <div className="flex gap-3">
                     <div className="bg-white dark:bg-[#1a2e20] p-3 px-5 rounded-xl border border-gray-100 dark:border-white/10 flex items-center gap-3 shadow-sm">

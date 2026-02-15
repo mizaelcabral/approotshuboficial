@@ -7,9 +7,10 @@ interface InstitutionLandingPageProps {
     institution: User;
     isDarkMode: boolean;
     onToggleDarkMode: () => void;
+    onLogin: () => void;
 }
 
-const InstitutionLandingPage: React.FC<InstitutionLandingPageProps> = ({ institution, isDarkMode, onToggleDarkMode }) => {
+const InstitutionLandingPage: React.FC<InstitutionLandingPageProps> = ({ institution, isDarkMode, onToggleDarkMode, onLogin }) => {
     return (
         <div className="min-h-screen bg-background-light dark:bg-background-dark font-display text-text-main dark:text-white transition-colors duration-200 overflow-y-auto">
             {/* Header */}
@@ -64,6 +65,15 @@ const InstitutionLandingPage: React.FC<InstitutionLandingPageProps> = ({ institu
                                 onSuccess={() => window.location.href = '/login'}
                                 onCancel={() => window.location.href = '/login'}
                             />
+                            <div className="mt-8 flex items-center justify-center gap-2 border-t border-gray-100 dark:border-white/5 pt-8">
+                                <span className="text-text-subtle text-sm">Já possui uma conta?</span>
+                                <button
+                                    onClick={onLogin}
+                                    className="text-text-main dark:text-white font-bold text-sm hover:text-primary transition-colors"
+                                >
+                                    Fazer Login
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
 

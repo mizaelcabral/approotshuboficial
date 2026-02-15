@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import { UserRole } from '../../types';
+import { User, UserRole } from '../../types';
 
 interface RegisterPageProps {
     onBackToLogin: () => void;
     isDarkMode: boolean;
     onToggleDarkMode: () => void;
+    publicInstitution?: User | null;
 }
 
-const RegisterPage = ({ onBackToLogin, isDarkMode, onToggleDarkMode }: RegisterPageProps) => {
+const RegisterPage = ({ onBackToLogin, isDarkMode, onToggleDarkMode, publicInstitution }: RegisterPageProps) => {
     const [step, setStep] = useState(1);
     const [userType, setUserType] = useState<UserRole>('patient');
     const [fullname, setFullname] = useState('');
@@ -149,14 +150,16 @@ const RegisterPage = ({ onBackToLogin, isDarkMode, onToggleDarkMode }: RegisterP
                                                     <span className={`material-symbols-outlined mb-2 text-3xl ${userType === 'doctor' ? 'text-primary' : ''}`}>medical_services</span>
                                                     <span className="text-sm font-bold">Médico</span>
                                                 </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setUserType('institution')}
-                                                    className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${userType === 'institution' ? 'border-primary bg-primary/5 text-[#0e1b12] dark:text-white' : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 hover:border-primary/50'}`}
-                                                >
-                                                    <span className={`material-symbols-outlined mb-2 text-3xl ${userType === 'institution' ? 'text-primary' : ''}`}>clinical_notes</span>
-                                                    <span className="text-sm font-bold">Instituição</span>
-                                                </button>
+                                                {!publicInstitution && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setUserType('institution')}
+                                                        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${userType === 'institution' ? 'border-primary bg-primary/5 text-[#0e1b12] dark:text-white' : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 hover:border-primary/50'}`}
+                                                    >
+                                                        <span className={`material-symbols-outlined mb-2 text-3xl ${userType === 'institution' ? 'text-primary' : ''}`}>clinical_notes</span>
+                                                        <span className="text-sm font-bold">Instituição</span>
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
 

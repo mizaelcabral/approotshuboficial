@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { UserRole } from '../../types';
+import { User, UserRole } from '../../types';
 
 interface LoginPageProps {
     onLogin: (email: string, password: string, role: UserRole) => void;
     onSwitchToRegister: () => void;
     isDarkMode: boolean;
     onToggleDarkMode: () => void;
+    publicInstitution?: User | null;
 }
 
-const LoginPage = ({ onLogin, onSwitchToRegister, isDarkMode, onToggleDarkMode }: LoginPageProps) => {
+const LoginPage = ({ onLogin, onSwitchToRegister, isDarkMode, onToggleDarkMode, publicInstitution }: LoginPageProps) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [selectedRole, setSelectedRole] = useState<UserRole>('patient');
@@ -40,12 +41,16 @@ const LoginPage = ({ onLogin, onSwitchToRegister, isDarkMode, onToggleDarkMode }
         }, 800);
     };
 
-    const roles = [
+    const allRoles = [
         { id: 'patient' as UserRole, label: 'Paciente', icon: 'person' },
         { id: 'doctor' as UserRole, label: 'Médico', icon: 'medical_services' },
         { id: 'institution' as UserRole, label: 'Instituição', icon: 'domain' },
         { id: 'super_admin' as UserRole, label: 'Super Admin', icon: 'admin_panel_settings' },
     ];
+
+    const roles = publicInstitution
+        ? allRoles.filter(role => role.id !== 'super_admin')
+        : allRoles;
 
     return (
         <div className="flex flex-col lg:flex-row w-full min-h-screen bg-background-light dark:bg-background-dark font-display text-text-main dark:text-white transition-colors duration-200">

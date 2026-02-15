@@ -50,9 +50,8 @@ const PharmacyPage = ({ onProductSelect, onAddToCart, onCartClick, cart, cartSub
 
             <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                    <div>
-                        <h2 className="text-2xl font-black tracking-tight">Farmácia Medicinal</h2>
-                        <p className="text-[#4e9767] text-sm font-medium">Produtos homologados e selecionados para o seu tratamento.</p>
+                    <div className="py-2">
+                        <p className="text-[#4e9767] text-sm font-bold">Produtos homologados e selecionados para o seu tratamento.</p>
                     </div>
                     <div className="hidden sm:flex gap-2">
                         <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full border border-primary/20">Preço Humanizado</span>

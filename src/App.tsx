@@ -12,7 +12,7 @@ import InstitutionLandingPage from './pages/public/InstitutionLandingPage';
 
 export default function App() {
     const [user, setUser] = useState<User | null>(null);
-    const [authView, setAuthView] = useState<'login' | 'register'>('login');
+    const [authView, setAuthView] = useState<'login' | 'register' | 'landing'>('login');
     const [publicInstitution, setPublicInstitution] = useState<User | null>(null);
     const [isLoadingPath, setIsLoadingPath] = useState(true);
     const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -64,6 +64,7 @@ export default function App() {
                 const inst = await getInstitutionBySlug(path);
                 if (inst) {
                     setPublicInstitution(inst);
+                    setAuthView('landing');
                 }
             }
             setIsLoadingPath(false);
@@ -140,19 +141,31 @@ export default function App() {
     }
 
     if (!user) {
-        if (publicInstitution) {
+        if (publicInstitution && authView === 'landing') {
             return (
                 <InstitutionLandingPage
                     institution={publicInstitution}
                     isDarkMode={isDarkMode}
                     onToggleDarkMode={toggleDarkMode}
+                    onLogin={() => setAuthView('login')}
                 />
             );
         }
 
         return authView === 'login'
-            ? <LoginPage onLogin={handleLogin} onSwitchToRegister={() => setAuthView('register')} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
-            : <RegisterPage onBackToLogin={() => setAuthView('login')} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />;
+            ? <LoginPage
+                onLogin={handleLogin}
+                onSwitchToRegister={() => setAuthView('register')}
+                isDarkMode={isDarkMode}
+                onToggleDarkMode={toggleDarkMode}
+                publicInstitution={publicInstitution}
+            />
+            : <RegisterPage
+                onBackToLogin={() => setAuthView('login')}
+                isDarkMode={isDarkMode}
+                onToggleDarkMode={toggleDarkMode}
+                publicInstitution={publicInstitution}
+            />;
     }
 
     // Role-based routing
